@@ -1,5 +1,9 @@
 # Modelo relacional completo (proposta; implementação incremental)
 
+Estado M3: identidade e biblioteca implementadas nas migrações 0001/0002. O restante modelo
+continua proposta. Favoritos false removem a linha de user_exercises; o flag existe para
+evoluir preferências sem duplicar exercícios. Catálogo/privados são diferenciados por owner_id.
+
 Todas as entidades têm PK UUID, created_at/updated_at timestamptz, salvo tabelas de junção
 com PK composta indicadas. FKs são indexadas quando usadas em joins/filtros. Numeric para
 carga/medidas/macros; nunca float para persistência. Constraints CHECK de valores não negativos,

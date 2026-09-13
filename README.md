@@ -3,13 +3,15 @@
 App mobile de fitness pessoal e para portefólio. React Native + Expo + TypeScript,
 FastAPI + SQLAlchemy + PostgreSQL. Licença MIT.
 
-**Estado: M2 — identidade.** Registo/login/logout, recuperação da sessão, perfil editável,
-navegação Home/Perfil e API protegida. O registo de treino começa nas próximas milestones.
+**Estado: M3 — biblioteca de exercícios.** Registo/login/logout, perfil, catálogo de
+exercícios, pesquisa/filtros, favoritos e criação/edição/arquivo de exercícios privados.
+Navegação Home/Workout/Perfil. Templates e registo de treino chegam nas próximas milestones.
 
 - [Arquitetura, navegação, design system e milestones](docs/architecture.md)
 - [Schema completo, relações, índices e cascades](docs/database.md)
 - [Entrega e verificações de M1](docs/milestone-1.md)
 - [Entrega, contrato de autenticação e verificações de M2](docs/milestone-2.md)
+- [Biblioteca, seed e verificações de M3](docs/milestone-3.md)
 
 ## Executar localmente (PowerShell)
 
@@ -26,13 +28,16 @@ backend/.venv/Scripts/python -m pip install --no-deps -e backend
 if (!(Test-Path backend/.env)) { Copy-Item backend/.env.example backend/.env }
 backend/.venv/Scripts/python backend/scripts/setup_local.py
 backend/.venv/Scripts/python -m alembic -c backend/alembic.ini upgrade head
+backend/.venv/Scripts/python backend/scripts/seed_exercises.py
 cd backend
 .venv/Scripts/python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 API docs: http://localhost:8000/docs. `/api/v1/health` confirma a API;
 `/api/v1/ready` faz SELECT 1 e devolve 503 quando PostgreSQL não está disponível.
-Alembic cria `users` e `auth_sessions`. Não existe utilizador de demonstração nem password
+Alembic cria identidade e biblioteca de exercícios. O seed acrescenta 24 exercícios e
+10 grupos musculares; repetir o comando não duplica nem substitui dados existentes.
+Não existe utilizador de demonstração nem password
 predefinida: cria a tua conta no mobile. `JWT_SECRET` é obrigatório e o script gera-o apenas
 se ainda não existir em `.env`; não substituir essa chave durante um reinício normal.
 
@@ -49,7 +54,7 @@ Antes de abrir no telemóvel, editar `mobile/.env`: `EXPO_PUBLIC_API_URL` deve s
 `http://<IPv4-do-PC>:8000/api/v1`; telemóvel e PC na mesma rede e firewall a permitir
 porta 8000 na rede privada. Android emulator usa `10.0.2.2`; iOS simulator usa localhost.
 Reiniciar Expo após alterar ambiente. Nunca colocar tokens/segredos em EXPO_PUBLIC_*.
-O botão “Verificar ligação” verifica API **e BD**. Após fechar completamente a app, recuperar
+O endpoint `/api/v1/ready` verifica API **e BD**. Após fechar completamente a app, recuperar
 a sessão requer rede; um erro de ligação mantém o refresh token guardado para tentar novamente.
 
 ## Verificar
@@ -73,6 +78,11 @@ fechar/reabrir app, terminar sessão e voltar a entrar. Verificar password incor
 email repetido, fonte aumentada, teclado e perda de rede. Logout requer rede para revogar
 a sessão no servidor; em caso de falha, a app mantém a sessão e permite tentar novamente.
 Exportar bundles não substitui testes em dispositivo.
+
+Na área **Workout**, pesquisa “dumbbell”, filtra por músculo/equipamento e abre um exercício
+para o guardar nos favoritos. Cria um exercício personalizado, edita-o e arquiva-o.
+Confirma que desaparece da biblioteca e que não é visível noutra conta. A Home também
+permite abrir esta área pelo botão “Explorar exercícios”.
 
 ## Atualizar o contrato da API
 

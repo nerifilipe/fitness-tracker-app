@@ -3,13 +3,15 @@ import { Screen } from "../components/ui/Screen";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { Text } from "../components/ui/Text";
-import { useConnection } from "../hooks/useConnection";
+import { useNavigation } from "@react-navigation/native";
+import type { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import type { TabParams } from "../navigation/RootNavigator";
 import { useAuth } from "../features/auth/AuthProvider";
 import { theme } from "../theme";
 
 export function HomeScreen() {
   const { user } = useAuth();
-  const { connection, check } = useConnection();
+  const navigation = useNavigation<BottomTabNavigationProp<TabParams>>();
   return (
     <Screen>
       <View style={styles.header}>
@@ -46,24 +48,13 @@ export function HomeScreen() {
         </Text>
         <Text muted>
           O teu objetivo é treinar {user?.weekly_workout_target} vezes por
-          semana. O registo de treinos chega na próxima etapa.
+          semana. Prepara os teus favoritos para o próximo treino.
         </Text>
       </View>
       <Button
-        label={
-          connection.status === "loading" ? "A ligar…" : "Verificar ligação"
-        }
-        onPress={check}
-        loading={connection.status === "loading"}
+        label="Explorar exercícios"
+        onPress={() => navigation.navigate("Workout")}
       />
-      {!!connection.message && (
-        <Text
-          accessibilityLiveRegion="polite"
-          style={connection.status === "error" ? styles.error : styles.feedback}
-        >
-          {connection.message}
-        </Text>
-      )}
       <Text variant="label" muted style={styles.footer}>
         UM TREINO DE CADA VEZ
       </Text>
@@ -89,7 +80,5 @@ const styles = StyleSheet.create({
   },
   markText: { color: theme.colors.accent, fontSize: theme.type.title },
   note: { gap: theme.space.sm },
-  error: { color: theme.colors.error },
-  feedback: { color: theme.colors.accent },
   footer: { textAlign: "center", marginTop: theme.space.sm },
 });

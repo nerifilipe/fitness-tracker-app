@@ -8,6 +8,7 @@ from app.core.errors import register_error_handlers
 from app.core.rate_limit import AuthLimiter
 from app.db.session import build_engine
 from app.modules.auth.router import router as auth_router
+from app.modules.exercises.router import router as exercises_router
 from app.modules.health.router import router as health_router
 from app.modules.users.router import router as users_router
 
@@ -31,17 +32,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=config.cors_origins,
-        allow_methods=["GET", "POST", "PUT"],
+        allow_methods=["GET", "POST", "PUT", "DELETE"],
         allow_headers=["Content-Type", "Authorization"],
     )
     app.include_router(health_router, prefix="/api/v1")
     app.include_router(auth_router, prefix="/api/v1")
     app.include_router(users_router, prefix="/api/v1")
+    app.include_router(exercises_router, prefix="/api/v1")
 
     @app.middleware("http")
     async def private_responses(request, call_next):
         response = await call_next(request)
-        if request.url.path.startswith(("/api/v1/auth", "/api/v1/users")):
+        if request.url.path.startswith(("/api/v1/auth", "/api/v1/users", "/api/v1/exercises")):
             response.headers["Cache-Control"] = "no-store"
         return response
 

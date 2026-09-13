@@ -8,9 +8,15 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { theme } from "../../theme";
 
-export function Screen({ children }: PropsWithChildren) {
+export function Screen({
+  children,
+  withHeader = false,
+}: PropsWithChildren<{ withHeader?: boolean }>) {
   return (
-    <SafeAreaView edges={["top", "left", "right"]} style={styles.screen}>
+    <SafeAreaView
+      edges={withHeader ? ["left", "right"] : ["top", "left", "right"]}
+      style={styles.screen}
+    >
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.screen}

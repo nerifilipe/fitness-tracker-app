@@ -130,6 +130,77 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/exercises/muscle-groups": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Muscle Groups */
+    get: operations["muscle_groups_api_v1_exercises_muscle_groups_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/exercises": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Exercises */
+    get: operations["list_exercises_api_v1_exercises_get"];
+    put?: never;
+    /** Create */
+    post: operations["create_api_v1_exercises_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/exercises/{exercise_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Detail */
+    get: operations["detail_api_v1_exercises__exercise_id__get"];
+    /** Edit */
+    put: operations["edit_api_v1_exercises__exercise_id__put"];
+    post?: never;
+    /** Archive */
+    delete: operations["archive_api_v1_exercises__exercise_id__delete"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/exercises/{exercise_id}/favorite": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** Favorite */
+    put: operations["favorite_api_v1_exercises__exercise_id__favorite_put"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -146,6 +217,107 @@ export interface components {
       error: components["schemas"]["ErrorDetail"];
       /** Request Id */
       request_id: string;
+    };
+    /** ExerciseInput */
+    ExerciseInput: {
+      /** Name */
+      name: string;
+      /**
+       * Equipment
+       * @enum {string}
+       */
+      equipment:
+        | "barbell"
+        | "dumbbell"
+        | "machine"
+        | "cable"
+        | "bodyweight"
+        | "band"
+        | "kettlebell"
+        | "other";
+      /**
+       * Load Type
+       * @enum {string}
+       */
+      load_type: "external" | "bodyweight" | "assisted";
+      /**
+       * Load Convention
+       * @enum {string}
+       */
+      load_convention: "total" | "per_hand" | "none" | "added" | "assistance";
+      /**
+       * Primary Muscle Id
+       * Format: uuid
+       */
+      primary_muscle_id: string;
+      /** Secondary Muscle Ids */
+      secondary_muscle_ids?: string[];
+      /** Instructions */
+      instructions?: string | null;
+    };
+    /** ExercisePage */
+    ExercisePage: {
+      /** Items */
+      items: components["schemas"]["ExerciseResponse"][];
+      /** Next Cursor */
+      next_cursor: string | null;
+    };
+    /** ExerciseResponse */
+    ExerciseResponse: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Name */
+      name: string;
+      /**
+       * Equipment
+       * @enum {string}
+       */
+      equipment:
+        | "barbell"
+        | "dumbbell"
+        | "machine"
+        | "cable"
+        | "bodyweight"
+        | "band"
+        | "kettlebell"
+        | "other";
+      /**
+       * Load Type
+       * @enum {string}
+       */
+      load_type: "external" | "bodyweight" | "assisted";
+      /**
+       * Load Convention
+       * @enum {string}
+       */
+      load_convention: "total" | "per_hand" | "none" | "added" | "assistance";
+      /** Instructions */
+      instructions: string | null;
+      primary_muscle: components["schemas"]["MuscleResponse"];
+      /** Secondary Muscles */
+      secondary_muscles: components["schemas"]["MuscleResponse"][];
+      /** Is Custom */
+      is_custom: boolean;
+      /** Is Favorite */
+      is_favorite: boolean;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+    };
+    /** FavoriteInput */
+    FavoriteInput: {
+      /** Is Favorite */
+      is_favorite: boolean;
     };
     /** HealthResponse */
     HealthResponse: {
@@ -165,6 +337,18 @@ export interface components {
       email: string;
       /** Password */
       password: string;
+    };
+    /** MuscleResponse */
+    MuscleResponse: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Slug */
+      slug: string;
+      /** Name */
+      name: string;
     };
     /** ProfileUpdate */
     ProfileUpdate: {
@@ -595,6 +779,435 @@ export interface operations {
       };
       /** @description Unauthorized */
       401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  muscle_groups_api_v1_exercises_muscle_groups_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MuscleResponse"][];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  list_exercises_api_v1_exercises_get: {
+    parameters: {
+      query?: {
+        q?: string;
+        muscle_id?: string | null;
+        equipment?:
+          | (
+              | "barbell"
+              | "dumbbell"
+              | "machine"
+              | "cable"
+              | "bodyweight"
+              | "band"
+              | "kettlebell"
+              | "other"
+            )
+          | null;
+        favorites_only?: boolean;
+        custom_only?: boolean;
+        cursor?: string | null;
+        limit?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ExercisePage"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  create_api_v1_exercises_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ExerciseInput"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ExerciseResponse"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  detail_api_v1_exercises__exercise_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        exercise_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ExerciseResponse"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  edit_api_v1_exercises__exercise_id__put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        exercise_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ExerciseInput"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ExerciseResponse"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  archive_api_v1_exercises__exercise_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        exercise_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  favorite_api_v1_exercises__exercise_id__favorite_put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        exercise_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FavoriteInput"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ExerciseResponse"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not Found */
+      404: {
         headers: {
           [name: string]: unknown;
         };

@@ -7,6 +7,7 @@ import { useAuth } from "../features/auth/AuthProvider";
 import { AuthScreen } from "../screens/AuthScreen";
 import { HomeScreen } from "../screens/HomeScreen";
 import { ProfileScreen } from "../screens/ProfileScreen";
+import { WorkoutNavigator } from "./WorkoutNavigator";
 import { Button } from "../components/ui/Button";
 import { Screen } from "../components/ui/Screen";
 import { Text } from "../components/ui/Text";
@@ -17,7 +18,11 @@ export type RootStackParams = {
   Register: undefined;
   Main: undefined;
 };
-type TabParams = { Home: undefined; Profile: undefined };
+export type TabParams = {
+  Home: undefined;
+  Workout: undefined;
+  Profile: undefined;
+};
 const Stack = createNativeStackNavigator<RootStackParams>();
 const Tabs = createBottomTabNavigator<TabParams>();
 const navigationTheme = {
@@ -41,7 +46,13 @@ function MainTabs() {
         tabBarInactiveTintColor: theme.colors.muted,
         tabBarIcon: ({ color, size }) => (
           <Ionicons
-            name={route.name === "Home" ? "home-outline" : "person-outline"}
+            name={
+              route.name === "Home"
+                ? "home-outline"
+                : route.name === "Workout"
+                  ? "barbell-outline"
+                  : "person-outline"
+            }
             color={color}
             size={size}
           />
@@ -52,6 +63,11 @@ function MainTabs() {
         name="Home"
         component={HomeScreen}
         options={{ title: "Início" }}
+      />
+      <Tabs.Screen
+        name="Workout"
+        component={WorkoutNavigator}
+        options={{ title: "Workout" }}
       />
       <Tabs.Screen
         name="Profile"

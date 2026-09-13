@@ -4,6 +4,12 @@ from sqlalchemy import Connection
 from app.core.config import Settings
 from app.db.session import Base, build_engine
 from app.modules.auth.models import AuthSession  # noqa: F401
+from app.modules.exercises.models import (  # noqa: F401
+    Exercise,
+    ExerciseMuscle,
+    MuscleGroup,
+    UserExercise,
+)
 from app.modules.users.models import User  # noqa: F401
 
 
