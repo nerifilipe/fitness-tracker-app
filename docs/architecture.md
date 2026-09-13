@@ -61,6 +61,10 @@ Password com Argon2, autorização por proprietário em todos os recursos e rate
 no login antes de exposição pública. HTTPS em produção. Nenhum segredo em EXPO_PUBLIC_*.
 Implementar este contrato em M2; M1 só expõe health/readiness sem dados pessoais.
 
+Estado M2: identidade implementada (ver milestone-2.md). Erros de validação agora usam
+o mesmo envelope de erro, omitindo inputs para não devolver passwords/tokens em respostas.
+Detalhes de campos não são incluídos nesta versão. Perfil usa PUT completo de preferências.
+
 O cliente usa fetch inicialmente. Tipos OpenAPI gerados em M2 para impedir divergência.
 Requests de escrita nunca são repetidos cegamente: UUID criado no dispositivo e chaves
 de idempotência para criação/finalização de treino. Atualização com `version` e 409 em

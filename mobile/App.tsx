@@ -1,12 +1,15 @@
-import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { HomeScreen } from './src/screens/HomeScreen';
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { AuthProvider } from "./src/features/auth/AuthProvider";
+import { RootNavigator } from "./src/navigation/RootNavigator";
 
 export default function App() {
   return (
     <SafeAreaProvider>
       <StatusBar style="light" />
-      <HomeScreen />
+      <AuthProvider>
+        <RootNavigator />
+      </AuthProvider>
     </SafeAreaProvider>
   );
 }
