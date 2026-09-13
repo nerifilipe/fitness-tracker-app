@@ -1,4 +1,12 @@
 # Logs
+**/.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+.expo/
+coverage.xml
 logs
 *.log
 npm-debug.log*

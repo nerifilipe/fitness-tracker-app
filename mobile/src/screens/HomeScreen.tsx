@@ -1,0 +1,54 @@
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Button } from '../components/ui/Button';
+import { Card } from '../components/ui/Card';
+import { Text } from '../components/ui/Text';
+import { useConnection } from '../hooks/useConnection';
+import { theme } from '../theme';
+
+export function HomeScreen() {
+  const { connection, check } = useConnection();
+  return (
+    <SafeAreaView style={styles.screen}>
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.header}>
+          <Text variant="label" style={styles.accent}>FITNESS / TRACKER</Text>
+          <Text variant="title" accessibilityRole="header">O teu próximo{'\n'}passo começa aqui.</Text>
+          <Text muted>Mais consistência. Um treino de cada vez.</Text>
+        </View>
+        <Card>
+          <Text variant="label" muted>O TEU TREINO</Text>
+          <View style={styles.mark} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+            <Text style={styles.markText}>＋</Text>
+          </View>
+          <Text variant="section" accessibilityRole="header">Espaço para evoluir</Text>
+          <Text muted>Os teus treinos e recordes vão ganhar vida aqui. Ainda não existem sessões registadas.</Text>
+        </Card>
+        <View style={styles.note}>
+          <Text variant="label" style={styles.accent}>UM INÍCIO SIMPLES</Text>
+          <Text muted>Estamos a preparar o registo de treinos. Nesta primeira versão de desenvolvimento, podes verificar a ligação ao serviço.</Text>
+        </View>
+        <Button label={connection.status === 'loading' ? 'A ligar…' : 'Verificar ligação'} onPress={check} loading={connection.status === 'loading'} />
+        {!!connection.message && (
+          <Text accessibilityLiveRegion="polite" style={connection.status === 'error' ? styles.error : styles.feedback}>
+            {connection.message}
+          </Text>
+        )}
+        <Text variant="label" muted style={styles.footer}>FUNDAÇÃO · V0.1</Text>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: theme.colors.background },
+  content: { padding: theme.space.xl, gap: theme.space.xl, maxWidth: 560, width: '100%', alignSelf: 'center' },
+  header: { gap: theme.space.md, paddingTop: theme.space.xl, paddingBottom: theme.space.lg },
+  accent: { color: theme.colors.accent },
+  mark: { width: 56, height: 56, borderRadius: theme.radius.control, backgroundColor: theme.colors.border, alignItems: 'center', justifyContent: 'center', marginVertical: theme.space.sm },
+  markText: { color: theme.colors.accent, fontSize: theme.type.title },
+  note: { gap: theme.space.sm },
+  error: { color: theme.colors.error },
+  feedback: { color: theme.colors.accent },
+  footer: { textAlign: 'center', marginTop: theme.space.sm },
+});
