@@ -71,11 +71,19 @@ Requests de escrita nunca são repetidos cegamente: UUID criado no dispositivo e
 de idempotência para criação/finalização de treino. Atualização com `version` e 409 em
 conflito. O servidor calcula volume/PRs e finaliza em transação.
 
-Treino ativo terá rascunho persistido em SQLite por utilizador a cada alteração (M5),
+Treino ativo tem rascunho persistido em SQLite por utilizador a cada alteração (M5),
 independente da navegação e com recuperação após reinício. Fila limitada ao treino ativo,
 sem implementar sincronização geral. Flush/retry explícito ao recuperar rede. Mostrar
 estado pendente; só confirmar sincronização após resposta do servidor. Cronómetro baseado
 em timestamps, não em número de ticks; pausa acumula duração e descanso guarda deadline.
+
+Estado M5: escrita SQLite síncrona de um agregado limitado ao treino, com WAL e synchronous=FULL,
+antes de publicar a alteração na UI. O pedido pendente e a sua revisão também são persistidos
+antes do envio; uma resposta antiga nunca substitui edições locais mais recentes.
+Conflitos entre dispositivos preservam a cópia local e pedem resolução explícita.
+SecureStore guarda refresh e identidade em cache no mesmo envelope; access continua só
+em memória. A cache permite abrir o treino offline, sem contornar autenticação no servidor.
+Detalhes, limites e testes em milestone-5.md. Finalização/volume/PRs ainda são M6.
 
 ## Navegação e experiência
 

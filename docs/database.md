@@ -1,6 +1,6 @@
 # Modelo relacional completo (proposta; implementação incremental)
 
-Estado M4: identidade, biblioteca e planos implementados nas migrações 0001/0002/0003. O restante modelo
+Estado M5: identidade, biblioteca, planos e treinos implementados nas migrações 0001–0004. O restante modelo
 continua proposta. Favoritos false removem a linha de user_exercises; o flag existe para
 evoluir preferências sem duplicar exercícios. Catálogo/privados são diferenciados por owner_id.
 
@@ -22,9 +22,10 @@ reps inteiras positivas quando concluídas, RIR inteiro 0–10 e posições >=0.
 | workout_templates | id, user_id FK, name, version >0, archived_at |
 | workout_template_exercises | id, template_id FK, exercise_id FK, position, rest_seconds >=0, notes; UNIQUE(template_id,position) |
 | workout_template_sets | id, template_exercise_id FK, position, set_type, target_reps_min/max, target_weight_kg nullable, target_rir nullable; UNIQUE(template_exercise_id,position) |
-| workouts | id (cliente), user_id FK, template_id FK nullable, name_snapshot, status active/paused/completed/cancelled, started_at, finished_at nullable, paused_at nullable, paused_seconds >=0, notes, version |
+| workouts | id (cliente), user_id FK, template_id FK nullable, create_hash, name_snapshot, status active/paused/completed/cancelled, started_at, finished_at nullable, paused_at nullable, paused_seconds >=0, rest_deadline nullable, notes, version |
 | workout_exercises | id, workout_id FK, exercise_id FK, position, name_snapshot, load_type_snapshot, load_convention_snapshot, rest_seconds, notes; UNIQUE(workout_id,position) |
 | workout_sets | id, workout_exercise_id FK, position, set_type warmup/working, weight_kg numeric(8,3) nullable, reps nullable, rir nullable, completed_at nullable; UNIQUE(workout_exercise_id,position) |
+| workout_mutations | workout_id FK CASCADE, mutation_id; PK composta; payload_hash, applied_version — recibo de idempotência |
 
 Um exercício pode repetir-se num template/sessão: não impor UNIQUE(workout_id,exercise_id).
 A tabela de sets planeados é necessária para distinguir prescrição de resultado real.

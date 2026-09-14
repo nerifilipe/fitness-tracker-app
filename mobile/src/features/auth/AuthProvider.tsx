@@ -9,6 +9,7 @@ import {
 import * as SecureStore from "expo-secure-store";
 import { request } from "../../services/api/http";
 import { AuthSession } from "./session";
+import { decodeCredentials } from "./credentials";
 
 const KEY = "fitness.refresh-token.v1";
 const AuthContext = createContext<AuthSession | null>(null);
@@ -18,11 +19,18 @@ export function AuthProvider({ children }: PropsWithChildren) {
     () =>
       new AuthSession(
         {
-          read: () => SecureStore.getItemAsync(KEY),
-          write: (token) =>
-            SecureStore.setItemAsync(KEY, token, {
-              keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
-            }),
+          read: async () =>
+            decodeCredentials(await SecureStore.getItemAsync(KEY)).token,
+          readUser: async () =>
+            decodeCredentials(await SecureStore.getItemAsync(KEY)).user,
+          write: (token, user) =>
+            SecureStore.setItemAsync(
+              KEY,
+              JSON.stringify({ version: 1, token, user }),
+              {
+                keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+              },
+            ),
           clear: () => SecureStore.deleteItemAsync(KEY),
         },
         request,

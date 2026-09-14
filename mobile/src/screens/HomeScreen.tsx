@@ -8,6 +8,7 @@ import type { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import type { TabParams } from "../navigation/RootNavigator";
 import { useAuth } from "../features/auth/AuthProvider";
 import { theme } from "../theme";
+import { WorkoutBanner } from "../features/workouts/WorkoutBanner";
 
 export function HomeScreen() {
   const { user } = useAuth();
@@ -23,6 +24,7 @@ export function HomeScreen() {
         </Text>
         <Text muted>Mais consistência. Um treino de cada vez.</Text>
       </View>
+      <WorkoutBanner />
       <Card>
         <Text variant="label" muted>
           O TEU TREINO

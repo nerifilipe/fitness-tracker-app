@@ -16,6 +16,7 @@ import { useAuth } from "../features/auth/AuthProvider";
 import { templateApi, type TemplatePage } from "../features/templates/api";
 import type { WorkoutStackParams } from "../navigation/WorkoutNavigator";
 import { theme } from "../theme";
+import { WorkoutBanner } from "../features/workouts/WorkoutBanner";
 
 export function TemplateListScreen({
   navigation,
@@ -86,6 +87,7 @@ export function TemplateListScreen({
         onRefresh={() => void load()}
         ListHeaderComponent={
           <View style={styles.header}>
+            <WorkoutBanner />
             <Text variant="label" style={{ color: theme.colors.accent }}>
               WORKOUT / PLANOS
             </Text>

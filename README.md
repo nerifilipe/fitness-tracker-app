@@ -3,9 +3,10 @@
 App mobile de fitness pessoal e para portefólio. React Native + Expo + TypeScript,
 FastAPI + SQLAlchemy + PostgreSQL. Licença MIT.
 
-**Estado: M4 — planos de treino.** Registo/login/logout, perfil, biblioteca com favoritos
-e exercícios privados, planos com exercícios ordenados e séries planeadas, edição,
-duplicação e arquivo. Navegação Home/Workout/Perfil. O registo do treino realizado chega em M5.
+**Estado: M5 — treino ativo com recuperação local.** Identidade, biblioteca, planos e
+execução de treino com séries, descanso, pausa/cancelamento, snapshots e sincronização
+idempotente. SQLite preserva o treino no telemóvel. Conclusão, histórico e métricas ficam
+para M6; esta etapa ainda não tem um botão para finalizar um treino como concluído.
 
 - [Arquitetura, navegação, design system e milestones](docs/architecture.md)
 - [Schema completo, relações, índices e cascades](docs/database.md)
@@ -13,6 +14,7 @@ duplicação e arquivo. Navegação Home/Workout/Perfil. O registo do treino rea
 - [Entrega, contrato de autenticação e verificações de M2](docs/milestone-2.md)
 - [Biblioteca, seed e verificações de M3](docs/milestone-3.md)
 - [Planos de treino, regras de edição e verificações de M4](docs/milestone-4.md)
+- [Treino ativo, recuperação e verificações de M5](docs/milestone-5.md)
 
 ## Executar localmente (PowerShell)
 
@@ -36,7 +38,7 @@ cd backend
 
 API docs: http://localhost:8000/docs. `/api/v1/health` confirma a API;
 `/api/v1/ready` faz SELECT 1 e devolve 503 quando PostgreSQL não está disponível.
-Alembic cria identidade, biblioteca de exercícios e planos de treino. O seed acrescenta 24 exercícios e
+Alembic cria identidade, biblioteca, planos e treinos. O seed acrescenta 24 exercícios e
 10 grupos musculares; repetir o comando não duplica nem substitui dados existentes.
 Não existe utilizador de demonstração nem password
 predefinida: cria a tua conta no mobile. `JWT_SECRET` é obrigatório e o script gera-o apenas
@@ -55,8 +57,11 @@ Antes de abrir no telemóvel, editar `mobile/.env`: `EXPO_PUBLIC_API_URL` deve s
 `http://<IPv4-do-PC>:8000/api/v1`; telemóvel e PC na mesma rede e firewall a permitir
 porta 8000 na rede privada. Android emulator usa `10.0.2.2`; iOS simulator usa localhost.
 Reiniciar Expo após alterar ambiente. Nunca colocar tokens/segredos em EXPO_PUBLIC_*.
-O endpoint `/api/v1/ready` verifica API **e BD**. Após fechar completamente a app, recuperar
-a sessão requer rede; um erro de ligação mantém o refresh token guardado para tentar novamente.
+O endpoint `/api/v1/ready` verifica API **e BD**. Depois de uma autenticação bem-sucedida
+em M5, a app pode recuperar a identidade em cache e o treino SQLite sem rede.
+O primeiro login e a criação do snapshot inicial requerem rede. Instalações antigas
+precisam de uma recuperação online para atualizar o formato das credenciais.
+A cache não dá acesso à API: o servidor continua a exigir um token válido.
 
 ## Verificar
 
@@ -92,6 +97,13 @@ fica intacto. Apagar remove o plano da lista por arquivo, preservando as referê
 Ao voltar atrás com alterações por guardar, a app pede confirmação. Os planos requerem
 rede; os rascunhos do editor ficam apenas em memória até guardar.
 
+Num plano com exercícios, toca em **Iniciar treino**. Confirma os valores de cada série,
+conclui-a e verifica o descanso automático. Experimenta pausa/retoma, adicionar/substituir
+exercícios e fechar completamente o Expo Go. Ao reabrir, usa **Retomar treino** na Home
+ou em Workout. Desliga a rede, regista uma série, fecha/reabre e confirma a recuperação;
+depois liga a rede e toca em **Sincronizar agora**. Cancelar preserva o registo como cancelado.
+O cronómetro de descanso não envia notificações quando a app está fechada.
+
 ## Atualizar o contrato da API
 
 ```powershell
@@ -114,7 +126,9 @@ Expo/React Native/TypeScript vêm do template oficial. Safe Area Context evita s
 com notch/barras. Fetch nativo dispensa Axios. Backend usa FastAPI/Pydantic Settings,
 SQLAlchemy/psycopg e Uvicorn; M2 acrescenta Alembic, PyJWT, pwdlib/Argon2 e email-validator.
 React Navigation/screens gere a navegação, SecureStore guarda apenas refresh tokens e
-Ionicons fornece a família de ícones. pytest/httpx/Ruff, Vitest e Prettier são ferramentas
+Ionicons fornece a família de ícones. M5 usa expo-sqlite para o rascunho persistido e
+expo-crypto para UUIDs; @types/node tipa o teste com SQLite real no Node.
+pytest/httpx/Ruff, Vitest e Prettier são ferramentas
 de desenvolvimento. Não são necessários Redis, Axios ou uma biblioteca de estado global.
 `mobile/package-lock.json` e `backend/requirements.lock` fixam resoluções. Para alterar
 dependências Python, atualizar pyproject, instalar e regenerar lock com

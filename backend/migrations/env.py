@@ -16,6 +16,12 @@ from app.modules.templates.models import (  # noqa: F401
     WorkoutTemplate,
 )
 from app.modules.users.models import User  # noqa: F401
+from app.modules.workouts.models import (  # noqa: F401
+    Workout,
+    WorkoutExercise,
+    WorkoutMutation,
+    WorkoutSet,
+)
 
 
 def migrate(connection: Connection) -> None:

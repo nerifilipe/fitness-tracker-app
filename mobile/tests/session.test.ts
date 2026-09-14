@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { AuthSession, type TokenStorage } from "../src/features/auth/session";
 import { ApiError, type Transport } from "../src/services/api/http";
 import type { Tokens } from "../src/features/auth/types";
+import { decodeCredentials } from "../src/features/auth/credentials";
 
 const user = {
   id: "user-a",
@@ -51,6 +52,77 @@ function transport(
 }
 
 describe("session lifecycle", () => {
+  it("restores the cached account offline and refreshes before its next server request", async () => {
+    const store = { ...storage("refresh-old"), readUser: async () => user };
+    let online = false;
+    const api = transport(async (path, options) => {
+      if (!online) throw new ApiError("Offline");
+      if (path === "/auth/refresh") return tokens("online");
+      expect((options?.headers as Record<string, string>).Authorization).toBe(
+        "Bearer access-online",
+      );
+      return user;
+    });
+    const session = new AuthSession(store, api);
+    await session.restore();
+    expect(session.getSnapshot()).toMatchObject({
+      phase: "signedIn",
+      offline: true,
+      user,
+    });
+    online = true;
+    expect(await session.authorized("/users/me")).toEqual(user);
+    expect(session.getSnapshot().offline).toBeUndefined();
+  });
+
+  it("does not unlock a revoked session using cached identity", async () => {
+    const store = { ...storage("refresh-old"), readUser: async () => user };
+    const session = new AuthSession(
+      store,
+      transport(async () => {
+        throw new ApiError("Revoked", 401);
+      }),
+    );
+    await session.restore();
+    expect(session.getSnapshot().phase).toBe("signedOut");
+    expect(session.getSnapshot().user).toBeNull();
+    expect(await store.read()).toBeNull();
+  });
+
+  it("recovers local access during server downtime but not credential-storage failure", async () => {
+    const store = { ...storage("refresh-old"), readUser: async () => user };
+    const session = new AuthSession(
+      store,
+      transport(async () => {
+        throw new ApiError("Unavailable", 503);
+      }),
+    );
+    await session.restore();
+    expect(session.getSnapshot().offline).toBe(true);
+    const broken = new AuthSession(
+      {
+        ...store,
+        write: async () => {
+          throw new Error("Storage failed");
+        },
+      },
+      transport(async () => tokens()),
+    );
+    await broken.restore();
+    expect(broken.getSnapshot().phase).toBe("recovery");
+  });
+
+  it("reads legacy credentials and binds cached identities to the same secure envelope", () => {
+    expect(decodeCredentials("legacy-refresh")).toEqual({
+      token: "legacy-refresh",
+      user: null,
+    });
+    expect(
+      decodeCredentials(JSON.stringify({ version: 1, token: "refresh", user })),
+    ).toEqual({ token: "refresh", user });
+    expect(() => decodeCredentials('{"version":2}')).toThrow();
+    expect(decodeCredentials(null)).toEqual({ token: null, user: null });
+  });
   it("does not clear a new account when an old retried request returns 401 late", async () => {
     const delayed = deferred<unknown>();
     let retried = false;
@@ -83,14 +155,14 @@ describe("session lifecycle", () => {
     expect(session.getSnapshot().phase).toBe("signedIn");
     expect(await store.read()).toBe("refresh-another-account");
   });
-  it("stores only refresh credentials and restores without exposing old profile data", async () => {
+  it("stores refresh credentials with cached identity without persisting access tokens", async () => {
     const store = storage();
     const api = transport(async () => tokens());
     const session = new AuthSession(store, api);
     await session.restore();
     expect(session.getSnapshot().phase).toBe("signedOut");
     await session.signIn(credentials);
-    expect(store.write).toHaveBeenCalledWith("refresh-old");
+    expect(store.write).toHaveBeenCalledWith("refresh-old", user);
     const restored = new AuthSession(
       store,
       transport(async () => tokens("new")),

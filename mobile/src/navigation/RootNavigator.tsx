@@ -12,11 +12,13 @@ import { Button } from "../components/ui/Button";
 import { Screen } from "../components/ui/Screen";
 import { Text } from "../components/ui/Text";
 import { theme } from "../theme";
+import { ActiveWorkoutScreen } from "../screens/ActiveWorkoutScreen";
 
 export type RootStackParams = {
   Login: undefined;
   Register: undefined;
   Main: undefined;
+  ActiveWorkout: undefined;
 };
 export type TabParams = {
   Home: undefined;
@@ -102,7 +104,14 @@ export function RootNavigator() {
     <NavigationContainer theme={navigationTheme}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {phase === "signedIn" ? (
-          <Stack.Screen name="Main" component={MainTabs} />
+          <>
+            <Stack.Screen name="Main" component={MainTabs} />
+            <Stack.Screen
+              name="ActiveWorkout"
+              component={ActiveWorkoutScreen}
+              options={{ headerShown: true, title: "Treino em curso" }}
+            />
+          </>
         ) : (
           <>
             <Stack.Screen name="Login" component={AuthScreen} />

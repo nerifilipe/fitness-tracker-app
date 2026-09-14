@@ -9,7 +9,8 @@ import type {
 
 export interface TokenStorage {
   read(): Promise<string | null>;
-  write(token: string): Promise<void>;
+  write(token: string, user?: User): Promise<void>;
+  readUser?(): Promise<User | null>;
   clear(): Promise<void>;
 }
 
@@ -17,6 +18,7 @@ export type AuthState = {
   phase: "loading" | "signedOut" | "signedIn" | "recovery";
   user: User | null;
   message?: string;
+  offline?: boolean;
 };
 
 const post = (body: unknown): RequestInit => ({
@@ -56,7 +58,7 @@ export class AuthSession {
 
   private async accept(tokens: Tokens) {
     try {
-      await this.storage.write(tokens.refresh_token);
+      await this.storage.write(tokens.refresh_token, tokens.user);
     } catch {
       await this.transport(
         "/auth/logout",
@@ -98,15 +100,26 @@ export class AuthSession {
 
   private async performRestore() {
     this.publish({ phase: "loading", user: null });
+    let cachedUser: User | null = null;
     try {
       this.refreshToken = await this.storage.read();
       if (!this.refreshToken) {
         this.publish({ phase: "signedOut", user: null });
         return;
       }
+      cachedUser = (await this.storage.readUser?.()) ?? null;
       await this.rotate();
     } catch (error) {
       if (this.state.phase !== "signedOut") {
+        if (
+          cachedUser &&
+          error instanceof ApiError &&
+          (error.status === 0 || error.status >= 500) &&
+          error.code !== "storage_error"
+        ) {
+          this.publish({ phase: "signedIn", user: cachedUser, offline: true });
+          return;
+        }
         this.publish({
           phase: "recovery",
           user: null,
@@ -163,6 +176,12 @@ export class AuthSession {
 
   async authorized<T>(path: string, options: RequestInit = {}): Promise<T> {
     const generation = this.generation;
+    if (
+      !this.accessToken &&
+      this.state.phase === "signedIn" &&
+      !this.signingOut
+    )
+      await this.rotate();
     const originalToken = this.accessToken;
     if (!originalToken || this.state.phase !== "signedIn" || this.signingOut)
       throw new ApiError("Volta a entrar.", 401);

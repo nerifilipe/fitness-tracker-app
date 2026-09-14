@@ -11,12 +11,20 @@ import { conventionLabels } from "../features/exercises/labels";
 import { templateApi, type Template } from "../features/templates/api";
 import type { WorkoutStackParams } from "../navigation/WorkoutNavigator";
 import { theme } from "../theme";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { RootStackParams } from "../navigation/RootNavigator";
+import { useWorkout } from "../features/workouts/WorkoutProvider";
 
 export function TemplateDetailScreen({
   route,
   navigation,
 }: NativeStackScreenProps<WorkoutStackParams, "TemplateDetail">) {
   const { session } = useAuth();
+  const { controller, local, ready, storageError } = useWorkout();
+  const rootNavigation =
+    useNavigation<NativeStackNavigationProp<RootStackParams>>();
+  const [starting, setStarting] = useState(false);
   const api = useMemo(() => templateApi(session), [session]);
   const [plan, setPlan] = useState<Template | null>(null);
   const [loading, setLoading] = useState(true);
@@ -25,7 +33,7 @@ export function TemplateDetailScreen({
   const [busy, setBusy] = useState(false);
   const pending = useRef(false);
   const [destination, setDestination] = useState<string | null>(null);
-  usePreventRemove(busy, () => {});
+  usePreventRemove(busy || starting, () => {});
   useFocusEffect(
     useCallback(() => {
       const controller = new AbortController();
@@ -87,6 +95,37 @@ export function TemplateDetailScreen({
           <Text muted>
             {plan.exercise_count} exercícios · {plan.set_count} séries planeadas
           </Text>
+          <Button
+            label={
+              local?.start ||
+              local?.pending ||
+              (local?.workout &&
+                ["active", "paused"].includes(local.workout.status)) ||
+              (local && local.revision !== local.ackRevision)
+                ? "Retomar treino em curso"
+                : "Iniciar treino"
+            }
+            loading={starting}
+            disabled={busy || !ready || storageError || !plan.exercise_count}
+            onPress={() => {
+              if (
+                local?.start ||
+                local?.pending ||
+                (local?.workout &&
+                  ["active", "paused"].includes(local.workout.status)) ||
+                (local && local.revision !== local.ackRevision)
+              ) {
+                rootNavigation.navigate("ActiveWorkout");
+                return;
+              }
+              setStarting(true);
+              void controller
+                .begin(plan.id, plan.version)
+                .then(() => rootNavigation.navigate("ActiveWorkout"))
+                .catch((err) => setError(err.message))
+                .finally(() => setStarting(false));
+            }}
+          />
           <Button
             label="Editar plano"
             disabled={busy}
