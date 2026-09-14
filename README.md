@@ -3,15 +3,16 @@
 App mobile de fitness pessoal e para portefólio. React Native + Expo + TypeScript,
 FastAPI + SQLAlchemy + PostgreSQL. Licença MIT.
 
-**Estado: M3 — biblioteca de exercícios.** Registo/login/logout, perfil, catálogo de
-exercícios, pesquisa/filtros, favoritos e criação/edição/arquivo de exercícios privados.
-Navegação Home/Workout/Perfil. Templates e registo de treino chegam nas próximas milestones.
+**Estado: M4 — planos de treino.** Registo/login/logout, perfil, biblioteca com favoritos
+e exercícios privados, planos com exercícios ordenados e séries planeadas, edição,
+duplicação e arquivo. Navegação Home/Workout/Perfil. O registo do treino realizado chega em M5.
 
 - [Arquitetura, navegação, design system e milestones](docs/architecture.md)
 - [Schema completo, relações, índices e cascades](docs/database.md)
 - [Entrega e verificações de M1](docs/milestone-1.md)
 - [Entrega, contrato de autenticação e verificações de M2](docs/milestone-2.md)
 - [Biblioteca, seed e verificações de M3](docs/milestone-3.md)
+- [Planos de treino, regras de edição e verificações de M4](docs/milestone-4.md)
 
 ## Executar localmente (PowerShell)
 
@@ -35,7 +36,7 @@ cd backend
 
 API docs: http://localhost:8000/docs. `/api/v1/health` confirma a API;
 `/api/v1/ready` faz SELECT 1 e devolve 503 quando PostgreSQL não está disponível.
-Alembic cria identidade e biblioteca de exercícios. O seed acrescenta 24 exercícios e
+Alembic cria identidade, biblioteca de exercícios e planos de treino. O seed acrescenta 24 exercícios e
 10 grupos musculares; repetir o comando não duplica nem substitui dados existentes.
 Não existe utilizador de demonstração nem password
 predefinida: cria a tua conta no mobile. `JWT_SECRET` é obrigatório e o script gera-o apenas
@@ -79,10 +80,17 @@ email repetido, fonte aumentada, teclado e perda de rede. Logout requer rede par
 a sessão no servidor; em caso de falha, a app mantém a sessão e permite tentar novamente.
 Exportar bundles não substitui testes em dispositivo.
 
-Na área **Workout**, pesquisa “dumbbell”, filtra por músculo/equipamento e abre um exercício
+Na área **Workout → Biblioteca de exercícios**, pesquisa “dumbbell”, filtra por músculo/equipamento e abre um exercício
 para o guardar nos favoritos. Cria um exercício personalizado, edita-o e arquiva-o.
 Confirma que desaparece da biblioteca e que não é visível noutra conta. A Home também
-permite abrir esta área pelo botão “Explorar exercícios”.
+permite abrir Workout pelo botão “Abrir área de treino”.
+
+Em **Workout → Criar plano**, dá-lhe um nome, adiciona exercícios e configura séries,
+repetições, carga (kg), descanso e RIR opcional. Usa Subir/Descer para ordenar; guarda,
+reabre e confirma os valores. Duplica e edita a cópia para verificar que o original
+fica intacto. Apagar remove o plano da lista por arquivo, preservando as referências.
+Ao voltar atrás com alterações por guardar, a app pede confirmação. Os planos requerem
+rede; os rascunhos do editor ficam apenas em memória até guardar.
 
 ## Atualizar o contrato da API
 

@@ -1,6 +1,6 @@
 # Modelo relacional completo (proposta; implementação incremental)
 
-Estado M3: identidade e biblioteca implementadas nas migrações 0001/0002. O restante modelo
+Estado M4: identidade, biblioteca e planos implementados nas migrações 0001/0002/0003. O restante modelo
 continua proposta. Favoritos false removem a linha de user_exercises; o flag existe para
 evoluir preferências sem duplicar exercícios. Catálogo/privados são diferenciados por owner_id.
 
@@ -19,7 +19,7 @@ reps inteiras positivas quando concluídas, RIR inteiro 0–10 e posições >=0.
 | exercises | id, owner_id FK users nullable = catálogo global, name, equipment, load_type, load_convention, instructions nullable, archived_at |
 | exercise_muscles | exercise_id FK, muscle_group_id FK, role primary/secondary; PK (exercise_id,muscle_group_id), índice único parcial exercise_id WHERE role='primary' |
 | user_exercises | user_id FK, exercise_id FK, is_favorite; PK (user_id,exercise_id) — preferências, não duplicação do exercício |
-| workout_templates | id, user_id FK, name, archived_at |
+| workout_templates | id, user_id FK, name, version >0, archived_at |
 | workout_template_exercises | id, template_id FK, exercise_id FK, position, rest_seconds >=0, notes; UNIQUE(template_id,position) |
 | workout_template_sets | id, template_exercise_id FK, position, set_type, target_reps_min/max, target_weight_kg nullable, target_rir nullable; UNIQUE(template_exercise_id,position) |
 | workouts | id (cliente), user_id FK, template_id FK nullable, name_snapshot, status active/paused/completed/cancelled, started_at, finished_at nullable, paused_at nullable, paused_seconds >=0, notes, version |
@@ -28,6 +28,13 @@ reps inteiras positivas quando concluídas, RIR inteiro 0–10 e posições >=0.
 
 Um exercício pode repetir-se num template/sessão: não impor UNIQUE(workout_id,exercise_id).
 A tabela de sets planeados é necessária para distinguir prescrição de resultado real.
+Em M4, guardar substitui os filhos do plano numa única transação: os UUIDs dos exercícios
+planeados/séries são internos e regenerados na edição; estes filhos não têm timestamps
+próprios. `workout_templates.updated_at/version` identificam a revisão do agregado.
+PUT e DELETE exigem a versão lida e usam lock de linha; uma versão antiga devolve 409.
+Limites atuais: 40 exercícios por plano, 1–20 séries por exercício, descanso 0–3600 s,
+reps 1–999 com máximo >= mínimo, carga numeric(8,3) opcional, RIR opcional 0–10.
+Planos vazios são permitidos. Apagar arquiva e preserva filhos; não existe restauro na UI.
 Não guardar is_custom: deriva de owner_id. Exigir exatamente um músculo primário no serviço
 (índice parcial só garante no máximo um). Catálogo global é apenas editável pelo administrador.
 

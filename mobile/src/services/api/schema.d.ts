@@ -201,6 +201,60 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/workout-templates": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Listing */
+    get: operations["listing_api_v1_workout_templates_get"];
+    put?: never;
+    /** Create */
+    post: operations["create_api_v1_workout_templates_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workout-templates/{template_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Detail */
+    get: operations["detail_api_v1_workout_templates__template_id__get"];
+    /** Edit */
+    put: operations["edit_api_v1_workout_templates__template_id__put"];
+    post?: never;
+    /** Archive */
+    delete: operations["archive_api_v1_workout_templates__template_id__delete"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workout-templates/{template_id}/duplicate": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Duplicate */
+    post: operations["duplicate_api_v1_workout_templates__template_id__duplicate_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -350,6 +404,40 @@ export interface components {
       /** Name */
       name: string;
     };
+    /** PlannedSet */
+    "PlannedSet-Input": {
+      /**
+       * Set Type
+       * @default working
+       * @enum {string}
+       */
+      set_type: "warmup" | "working";
+      /** Target Reps Min */
+      target_reps_min: number;
+      /** Target Reps Max */
+      target_reps_max: number;
+      /** Target Weight Kg */
+      target_weight_kg?: number | string | null;
+      /** Target Rir */
+      target_rir?: number | null;
+    };
+    /** PlannedSet */
+    "PlannedSet-Output": {
+      /**
+       * Set Type
+       * @default working
+       * @enum {string}
+       */
+      set_type: "warmup" | "working";
+      /** Target Reps Min */
+      target_reps_min: number;
+      /** Target Reps Max */
+      target_reps_max: number;
+      /** Target Weight Kg */
+      target_weight_kg?: string | null;
+      /** Target Rir */
+      target_rir?: number | null;
+    };
     /** ProfileUpdate */
     ProfileUpdate: {
       /** Display Name */
@@ -380,6 +468,144 @@ export interface components {
       password: string;
       /** Display Name */
       display_name: string;
+    };
+    /** TemplateExerciseInput */
+    TemplateExerciseInput: {
+      /**
+       * Exercise Id
+       * Format: uuid
+       */
+      exercise_id: string;
+      /**
+       * Rest Seconds
+       * @default 90
+       */
+      rest_seconds: number;
+      /** Notes */
+      notes?: string | null;
+      /** Sets */
+      sets: components["schemas"]["PlannedSet-Input"][];
+    };
+    /** TemplateExerciseResponse */
+    TemplateExerciseResponse: {
+      /**
+       * Exercise Id
+       * Format: uuid
+       */
+      exercise_id: string;
+      /**
+       * Rest Seconds
+       * @default 90
+       */
+      rest_seconds: number;
+      /** Notes */
+      notes?: string | null;
+      /** Sets */
+      sets: components["schemas"]["PlannedSet-Output"][];
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Position */
+      position: number;
+      /** Name */
+      name: string;
+      /**
+       * Load Type
+       * @enum {string}
+       */
+      load_type: "external" | "bodyweight" | "assisted";
+      /**
+       * Load Convention
+       * @enum {string}
+       */
+      load_convention: "total" | "per_hand" | "none" | "added" | "assistance";
+      /** Is Archived */
+      is_archived: boolean;
+    };
+    /** TemplateInput */
+    TemplateInput: {
+      /** Name */
+      name: string;
+      /**
+       * Exercises
+       * @default []
+       */
+      exercises: components["schemas"]["TemplateExerciseInput"][];
+    };
+    /** TemplatePage */
+    TemplatePage: {
+      /** Items */
+      items: components["schemas"]["TemplateSummary"][];
+      /** Next Offset */
+      next_offset: number | null;
+    };
+    /** TemplateResponse */
+    TemplateResponse: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Name */
+      name: string;
+      /** Version */
+      version: number;
+      /** Exercise Count */
+      exercise_count: number;
+      /** Set Count */
+      set_count: number;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+      /** Exercises */
+      exercises: components["schemas"]["TemplateExerciseResponse"][];
+    };
+    /** TemplateSummary */
+    TemplateSummary: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Name */
+      name: string;
+      /** Version */
+      version: number;
+      /** Exercise Count */
+      exercise_count: number;
+      /** Set Count */
+      set_count: number;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+    };
+    /** TemplateUpdate */
+    TemplateUpdate: {
+      /** Name */
+      name: string;
+      /**
+       * Exercises
+       * @default []
+       */
+      exercises: components["schemas"]["TemplateExerciseInput"][];
+      /** Version */
+      version: number;
     };
     /** TokenResponse */
     TokenResponse: {
@@ -1208,6 +1434,361 @@ export interface operations {
       };
       /** @description Not Found */
       404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  listing_api_v1_workout_templates_get: {
+    parameters: {
+      query?: {
+        offset?: number;
+        limit?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["TemplatePage"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  create_api_v1_workout_templates_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TemplateInput"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["TemplateResponse"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  detail_api_v1_workout_templates__template_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        template_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["TemplateResponse"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  edit_api_v1_workout_templates__template_id__put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        template_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TemplateUpdate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["TemplateResponse"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  archive_api_v1_workout_templates__template_id__delete: {
+    parameters: {
+      query: {
+        version: number;
+      };
+      header?: never;
+      path: {
+        template_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  duplicate_api_v1_workout_templates__template_id__duplicate_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        template_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["TemplateResponse"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Conflict */
+      409: {
         headers: {
           [name: string]: unknown;
         };

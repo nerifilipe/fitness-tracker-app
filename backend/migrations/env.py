@@ -10,6 +10,11 @@ from app.modules.exercises.models import (  # noqa: F401
     MuscleGroup,
     UserExercise,
 )
+from app.modules.templates.models import (  # noqa: F401
+    TemplateExercise,
+    TemplateSet,
+    WorkoutTemplate,
+)
 from app.modules.users.models import User  # noqa: F401
 
 

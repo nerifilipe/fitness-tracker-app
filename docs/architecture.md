@@ -31,6 +31,7 @@ backend/
       auth/                 # cada módulo: router, schemas, service, models
       users/
       exercises/
+      templates/            # prescrição de treino (M4), separada da execução
       workouts/
       progress/             # V2
       nutrition/            # V3

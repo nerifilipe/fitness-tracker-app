@@ -85,7 +85,7 @@ export function ExerciseLibraryScreen({
   }
 
   return (
-    <SafeAreaView edges={["top", "left", "right"]} style={styles.screen}>
+    <SafeAreaView edges={["left", "right"]} style={styles.screen}>
       <FlatList
         data={state.items}
         keyExtractor={(item) => item.id}

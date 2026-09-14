@@ -49,7 +49,7 @@ export function ExerciseDetailScreen({
     try {
       if (archive) {
         await api.archive(exercise.id);
-        navigation.popToTop();
+        navigation.popTo("ExerciseLibrary");
       } else
         setExercise(await api.favorite(exercise.id, !exercise.is_favorite));
     } catch (err) {

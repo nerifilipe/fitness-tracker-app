@@ -48,11 +48,11 @@ export function HomeScreen() {
         </Text>
         <Text muted>
           O teu objetivo é treinar {user?.weekly_workout_target} vezes por
-          semana. Prepara os teus favoritos para o próximo treino.
+          semana. Prepara os teus planos para o próximo treino.
         </Text>
       </View>
       <Button
-        label="Explorar exercícios"
+        label="Abrir área de treino"
         onPress={() => navigation.navigate("Workout")}
       />
       <Text variant="label" muted style={styles.footer}>
