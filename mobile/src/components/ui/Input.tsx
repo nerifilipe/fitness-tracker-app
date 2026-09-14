@@ -24,7 +24,7 @@ export function Input({ label, hint, password, style, ...props }: Props) {
       <View style={[styles.control, focused && styles.focused]}>
         <TextInput
           {...props}
-          accessibilityLabel={label}
+          accessibilityLabel={props.accessibilityLabel ?? label}
           placeholderTextColor={theme.colors.muted}
           secureTextEntry={password && !visible}
           onFocus={() => setFocused(true)}

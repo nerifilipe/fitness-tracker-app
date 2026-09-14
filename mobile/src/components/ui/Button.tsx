@@ -4,6 +4,7 @@ import { Text } from "./Text";
 
 type Props = {
   label: string;
+  accessibilityLabel?: string;
   onPress: () => void;
   loading?: boolean;
   disabled?: boolean;
@@ -12,6 +13,7 @@ type Props = {
 
 export function Button({
   label,
+  accessibilityLabel,
   onPress,
   loading = false,
   disabled = false,
@@ -20,7 +22,7 @@ export function Button({
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={label}
+      accessibilityLabel={accessibilityLabel ?? label}
       accessibilityState={{ disabled: loading || disabled, busy: loading }}
       disabled={loading || disabled}
       onPress={onPress}

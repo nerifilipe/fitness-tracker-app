@@ -52,6 +52,96 @@ function transport(
 }
 
 describe("session lifecycle", () => {
+  it("retains the updated profile after restarting offline", async () => {
+    let cached = user;
+    const store: TokenStorage = {
+      ...storage(),
+      readUser: async () => cached,
+      write: vi.fn(async (_token, next) => {
+        cached = next as typeof user;
+      }),
+      read: async () => "refresh-old",
+    };
+    const updated = {
+      ...user,
+      display_name: "Updated",
+      weekly_workout_target: 2,
+    };
+    const session = new AuthSession(
+      store,
+      transport(async (path) => (path === "/users/me" ? updated : tokens())),
+    );
+    await session.restore();
+    await session.updateProfile(updated);
+    const restored = new AuthSession(
+      store,
+      transport(async () => {
+        throw new ApiError("Offline");
+      }),
+    );
+    await restored.restore();
+    expect(restored.getSnapshot()).toMatchObject({
+      phase: "signedIn",
+      offline: true,
+      user: updated,
+    });
+  });
+
+  it("reports a failed profile cache write while keeping the server update visible", async () => {
+    const store = storage();
+    const updated = { ...user, weekly_workout_target: 2 };
+    const session = new AuthSession(
+      store,
+      transport(async (path) => (path === "/users/me" ? updated : tokens())),
+    );
+    await session.restore();
+    await session.signIn(credentials);
+    store.write.mockRejectedValueOnce(new Error("Disk failure"));
+    await expect(session.updateProfile(updated)).rejects.toMatchObject({
+      code: "storage_error",
+    });
+    expect(session.getSnapshot().user?.weekly_workout_target).toBe(2);
+    expect(await store.read()).toBe("refresh-old");
+    await session.updateProfile(updated);
+    expect(session.getSnapshot().phase).toBe("signedIn");
+  });
+
+  it("serializes a profile cache write with token rotation and clears it on logout", async () => {
+    const store = storage();
+    const originalWrite = store.write.getMockImplementation()!;
+    const blockedWrite = deferred<void>();
+    const api = transport(async (path, options) => {
+      if (path === "/auth/login") return tokens();
+      if (path === "/auth/refresh") return tokens("new");
+      if (
+        path === "/probe" &&
+        (options?.headers as Record<string, string>).Authorization ===
+          "Bearer access-old"
+      )
+        throw new ApiError("Expired", 401);
+      return user;
+    });
+    const session = new AuthSession(store, api);
+    await session.restore();
+    await session.signIn(credentials);
+    store.write.mockImplementationOnce(async (token) => {
+      await blockedWrite.promise;
+      await originalWrite(token);
+    });
+    const profile = session.updateProfile(user);
+    await vi.waitFor(() => expect(store.write).toHaveBeenCalledTimes(2));
+    const probe = session.authorized("/probe");
+    await vi.waitFor(() =>
+      expect(api).toHaveBeenCalledWith("/auth/refresh", expect.anything()),
+    );
+    expect(store.write).toHaveBeenCalledTimes(2);
+    blockedWrite.resolve();
+    await Promise.all([profile, probe]);
+    expect(await store.read()).toBe("refresh-new");
+    await session.signOut();
+    expect(await store.read()).toBeNull();
+  });
+
   it("restores the cached account offline and refreshes before its next server request", async () => {
     const store = { ...storage("refresh-old"), readUser: async () => user };
     let online = false;

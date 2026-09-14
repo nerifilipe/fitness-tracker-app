@@ -96,6 +96,7 @@ export function LiveExerciseCard({
                 <View style={styles.cell}>
                   <Input
                     label="Carga (kg)"
+                    accessibilityLabel={`${e.name_snapshot}, série ${j + 1}, carga em kg`}
                     value={s.weight}
                     maxLength={9}
                     keyboardType="decimal-pad"
@@ -110,6 +111,7 @@ export function LiveExerciseCard({
                 <View style={styles.cell}>
                   <Input
                     label="Repetições"
+                    accessibilityLabel={`${e.name_snapshot}, série ${j + 1}, repetições`}
                     value={s.reps}
                     maxLength={3}
                     keyboardType="number-pad"
@@ -120,6 +122,7 @@ export function LiveExerciseCard({
               </View>
               <Input
                 label="RIR (opcional, 0–10)"
+                accessibilityLabel={`${e.name_snapshot}, série ${j + 1}, RIR opcional de 0 a 10`}
                 value={s.rir}
                 maxLength={2}
                 keyboardType="number-pad"
@@ -127,6 +130,7 @@ export function LiveExerciseCard({
                 onChangeText={(rir) => changeSet(s.id, { rir })}
               />
               <Button
+                accessibilityLabel={`${s.completed_at ? "Desmarcar" : "Concluir"} série ${j + 1} de ${e.name_snapshot}`}
                 label={
                   s.completed_at
                     ? "Desmarcar série para corrigir"

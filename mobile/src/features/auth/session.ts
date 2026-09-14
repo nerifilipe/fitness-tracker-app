@@ -37,6 +37,7 @@ export class AuthSession {
   private listeners = new Set<() => void>();
   private signingIn = false;
   private signingOut = false;
+  private storageQueue: Promise<void> = Promise.resolve();
 
   constructor(
     private storage: TokenStorage,
@@ -56,9 +57,17 @@ export class AuthSession {
     this.listeners.forEach((listener) => listener());
   }
 
+  private store(action: () => Promise<void>): Promise<void> {
+    const pending = this.storageQueue.then(action);
+    this.storageQueue = pending.catch(() => {});
+    return pending;
+  }
+
   private async accept(tokens: Tokens) {
     try {
-      await this.storage.write(tokens.refresh_token, tokens.user);
+      await this.store(() =>
+        this.storage.write(tokens.refresh_token, tokens.user),
+      );
     } catch {
       await this.transport(
         "/auth/logout",
@@ -79,7 +88,7 @@ export class AuthSession {
     this.generation++;
     this.accessToken = this.refreshToken = null;
     try {
-      await this.storage.clear();
+      await this.store(() => this.storage.clear());
       this.publish({ phase: "signedOut", user: null, message });
     } catch {
       this.publish({
@@ -225,8 +234,25 @@ export class AuthSession {
       method: "PUT",
       body: JSON.stringify(input),
     });
-    if (generation === this.generation && this.state.phase === "signedIn")
+    if (generation === this.generation && this.state.phase === "signedIn") {
       this.publish({ phase: "signedIn", user });
+      try {
+        await this.store(async () => {
+          if (
+            generation === this.generation &&
+            this.state.phase === "signedIn" &&
+            this.refreshToken
+          )
+            await this.storage.write(this.refreshToken, user);
+        });
+      } catch {
+        throw new ApiError(
+          "As preferências ficaram guardadas no servidor, mas não foi possível atualizar a cópia no telemóvel. Tenta guardar novamente.",
+          0,
+          "storage_error",
+        );
+      }
+    }
   }
 
   async signOut() {

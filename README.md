@@ -6,7 +6,8 @@ FastAPI + SQLAlchemy + PostgreSQL. Licença MIT.
 **Estado: M6 — conclusão, histórico e resultados.** Identidade, biblioteca, planos e
 execução de treino com recuperação local. Finalização idempotente, resumo com volume e
 marcas pessoais, histórico paginado com filtro de datas e Home com resultados semanais
-reais. Validação dos fluxos em dispositivos Android/iOS fica para M7.
+reais. M7 tem verificação automatizada entre mobile/API/SQLite; validação visual e por
+toque em dispositivos Android/iOS ainda pendente.
 
 - [Arquitetura, navegação, design system e milestones](docs/architecture.md)
 - [Schema completo, relações, índices e cascades](docs/database.md)
@@ -16,6 +17,7 @@ reais. Validação dos fluxos em dispositivos Android/iOS fica para M7.
 - [Planos de treino, regras de edição e verificações de M4](docs/milestone-4.md)
 - [Treino ativo, recuperação e verificações de M5](docs/milestone-5.md)
 - [Conclusão, histórico, resultados e verificações de M6](docs/milestone-6.md)
+- [Validação automatizada, correções e pendências de M7](docs/milestone-7.md)
 
 ## Executar localmente (PowerShell)
 
@@ -79,6 +81,16 @@ npx expo export --platform android --platform ios
 
 Os testes backend requerem PostgreSQL e criam/removem apenas um schema `test_auth_<uuid>`;
 não apagam dados pessoais. `TEST_DATABASE_URL` permite escolher outra BD de testes.
+O teste de integração mobile também requer Node no PATH e `npm ci` executado em mobile.
+Inicia e encerra a sua própria API local numa porta livre, sem usar contas ou treinos
+pessoais. Para executar só esse fluxo:
+
+```powershell
+backend/.venv/Scripts/python -m pytest backend/tests/test_mobile_integration.py -q
+```
+
+O `npm test` normal salta o cenário de integração, porque precisa da API isolada que
+este comando Python prepara. O cenário é executado pela suite backend completa.
 
 Smoke manual: criar conta, alterar nome/objetivo no Perfil, confirmar Home atualizada,
 fechar/reabrir app, terminar sessão e voltar a entrar. Verificar password incorreta,
