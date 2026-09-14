@@ -76,8 +76,6 @@ export function toSync(
   version: number,
   mutationId: string,
 ): Sync {
-  if (workout.status === "completed")
-    throw new Error("Este treino está encerrado.");
   return {
     version,
     mutation_id: mutationId,
@@ -146,6 +144,19 @@ export function cancelWorkout(workout: LiveWorkout, now: number): LiveWorkout {
   };
   toSync(cancelled, cancelled.version, "validation-only");
   return cancelled;
+}
+export function finishWorkout(workout: LiveWorkout, now: number): LiveWorkout {
+  if (!["active", "paused"].includes(workout.status)) return workout;
+  if (!workout.exercises.some((e) => e.sets.some((s) => s.completed_at)))
+    throw new Error(
+      "Conclui pelo menos uma série antes de finalizar o treino.",
+    );
+  const finished: LiveWorkout = {
+    ...cancelWorkout(workout, now),
+    status: "completed",
+  };
+  toSync(finished, finished.version, "validation-only");
+  return finished;
 }
 export function toggleSet(
   workout: LiveWorkout,

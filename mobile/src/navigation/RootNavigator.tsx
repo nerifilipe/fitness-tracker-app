@@ -1,5 +1,9 @@
 import { ActivityIndicator } from "react-native";
-import { NavigationContainer, DarkTheme } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  DarkTheme,
+  type NavigatorScreenParams,
+} from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -13,12 +17,16 @@ import { Screen } from "../components/ui/Screen";
 import { Text } from "../components/ui/Text";
 import { theme } from "../theme";
 import { ActiveWorkoutScreen } from "../screens/ActiveWorkoutScreen";
+import { HistoryScreen } from "../screens/HistoryScreen";
+import { WorkoutSummaryScreen } from "../screens/WorkoutSummaryScreen";
 
 export type RootStackParams = {
   Login: undefined;
   Register: undefined;
-  Main: undefined;
+  Main: NavigatorScreenParams<TabParams> | undefined;
   ActiveWorkout: undefined;
+  History: undefined;
+  WorkoutSummary: { id: string };
 };
 export type TabParams = {
   Home: undefined;
@@ -107,9 +115,19 @@ export function RootNavigator() {
           <>
             <Stack.Screen name="Main" component={MainTabs} />
             <Stack.Screen
+              name="History"
+              component={HistoryScreen}
+              options={{ headerShown: true, title: "Histórico" }}
+            />
+            <Stack.Screen
+              name="WorkoutSummary"
+              component={WorkoutSummaryScreen}
+              options={{ headerShown: true, title: "Resumo do treino" }}
+            />
+            <Stack.Screen
               name="ActiveWorkout"
               component={ActiveWorkoutScreen}
-              options={{ headerShown: true, title: "Treino em curso" }}
+              options={{ headerShown: true, title: "Treino" }}
             />
           </>
         ) : (

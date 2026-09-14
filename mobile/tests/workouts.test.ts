@@ -11,6 +11,7 @@ import {
   remaining,
   toggleSet,
   cancelWorkout,
+  finishWorkout,
   toSync,
 } from "../src/features/workouts/draft";
 import type {
@@ -132,6 +133,70 @@ afterEach(() => {
 });
 
 describe("durable workout synchronization", () => {
+  it("persists offline completion and replays it unchanged after restart", async () => {
+    const { controller, store, remote } = await setup();
+    const start = Date.parse(workout().started_at);
+    controller.edit((w) => toggleSet(w, "block-a", "set-a", start + 10000));
+    controller.edit((w) => finishWorkout(w, start + 60000));
+    vi.mocked(remote.sync).mockRejectedValueOnce(
+      new ApiError("Lost finish response"),
+    );
+    await controller.sync();
+    const saved = structuredClone(store.rows.get("a")!);
+    expect(saved.pending!.request.status).toBe("completed");
+    expect(saved.workout!.finished_at).toBe(
+      new Date(start + 60000).toISOString(),
+    );
+    controller.correctClosure();
+    expect(controller.getSnapshot().local?.workout?.status).toBe("completed");
+    controller.dispose();
+    const resumed = await setup(store, remote);
+    expect(vi.mocked(remote.sync).mock.calls[1][1]).toEqual(
+      saved.pending!.request,
+    );
+    const local = resumed.controller.getSnapshot().local!;
+    expect(local.workout?.status).toBe("completed");
+    expect(local.ackRevision).toBe(local.revision);
+    expect(local.pending).toBeNull();
+    expect(
+      resumed.controller.edit((w) => ({ ...w, notes: "cannot edit closed" })),
+    ).toBe(false);
+  });
+
+  it("preserves completion made while an active revision is syncing", async () => {
+    const { controller, remote } = await setup();
+    const start = Date.parse(workout().started_at);
+    controller.edit((w) => toggleSet(w, "block-a", "set-a", start + 10000));
+    const pending = deferred<SyncResult>();
+    const echo = vi.mocked(remote.sync).getMockImplementation()!;
+    vi.mocked(remote.sync).mockReturnValueOnce(pending.promise);
+    const run = controller.sync();
+    const request = vi.mocked(remote.sync).mock.calls[0];
+    controller.edit((w) => finishWorkout(w, start + 60000));
+    pending.resolve(await echo(...request));
+    await run;
+    expect(controller.getSnapshot().local?.workout?.status).toBe("completed");
+    await controller.sync();
+    expect(vi.mocked(remote.sync).mock.calls[1][1].status).toBe("completed");
+    expect(vi.mocked(remote.sync).mock.calls[1][1].version).toBe(2);
+    expect(controller.getSnapshot().local?.pending).toBeNull();
+  });
+
+  it("allows correction of a rejected finish but never an acknowledged finish", async () => {
+    const { controller, remote } = await setup();
+    const start = Date.parse(workout().started_at);
+    controller.edit((w) => toggleSet(w, "block-a", "set-a", start + 10000));
+    controller.edit((w) => finishWorkout(w, start + 60000));
+    vi.mocked(remote.sync).mockRejectedValueOnce(new ApiError("Invalid", 422));
+    await controller.sync();
+    controller.correctClosure();
+    expect(controller.getSnapshot().local?.workout?.status).toBe("active");
+    controller.edit((w) => finishWorkout(w, start + 120000));
+    await controller.sync();
+    controller.correctClosure();
+    expect(controller.getSnapshot().local?.workout?.status).toBe("completed");
+  });
+
   it("allows correction after a cancellation is definitively rejected, without reopening a synced cancellation", async () => {
     const { controller, remote } = await setup();
     controller.edit((w) => cancelWorkout(w, Date.parse(w.started_at) + 60000));
@@ -139,12 +204,12 @@ describe("durable workout synchronization", () => {
       new ApiError("Invalid reference", 422),
     );
     await controller.sync();
-    controller.correctCancellation();
+    controller.correctClosure();
     expect(controller.getSnapshot().local?.workout?.status).toBe("active");
     expect(controller.getSnapshot().local?.workout?.finished_at).toBeNull();
     controller.edit((w) => cancelWorkout(w, Date.parse(w.started_at) + 120000));
     await controller.sync();
-    controller.correctCancellation();
+    controller.correctClosure();
     expect(controller.getSnapshot().local?.workout?.status).toBe("cancelled");
   });
   it("persists each edit before publishing and restores it while offline", async () => {
@@ -357,6 +422,22 @@ describe("durable workout synchronization", () => {
 
 describe("workout time and completion", () => {
   const start = Date.parse("2026-09-14T12:00:00.000Z");
+  it("rejects empty completion, freezes active time and clears rest when finishing paused", () => {
+    let live = fromServer(workout());
+    expect(() => finishWorkout(live, start + 1000)).toThrow(
+      /pelo menos uma série/,
+    );
+    live = toggleSet(live, "block-a", "set-a", start + 10000);
+    live = togglePause(live, start + 30000);
+    live = finishWorkout(live, start + 90000);
+    expect(live.status).toBe("completed");
+    expect(live.paused_at).toBeNull();
+    expect(live.paused_seconds).toBe(60);
+    expect(live.rest_deadline).toBeNull();
+    expect(elapsed(live, start + 86400000)).toBe(30);
+    expect(finishWorkout(live, start + 900000)).toBe(live);
+    expect(toSync(live, 1, "finish").status).toBe("completed");
+  });
   it("derives active time from timestamps across a pause and app restart", () => {
     let live = fromServer(workout());
     live = togglePause(live, start + 60000);

@@ -28,7 +28,9 @@ export function WorkoutBanner() {
   if (!pending && !live && !local?.conflict) return null;
   return (
     <Card>
-      <Text variant="label">TREINO EM CURSO</Text>
+      <Text variant="label">
+        {live ? "TREINO EM CURSO" : "TREINO POR SINCRONIZAR"}
+      </Text>
       <Text variant="section">
         {local?.workout?.name_snapshot ?? "A iniciar treino"}
       </Text>
@@ -40,7 +42,7 @@ export function WorkoutBanner() {
             : "Continua de onde ficaste."}
       </Text>
       <Button
-        label="Retomar treino"
+        label={live ? "Retomar treino" : "Abrir registo pendente"}
         onPress={() => navigation.navigate("ActiveWorkout")}
       />
     </Card>

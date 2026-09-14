@@ -1701,6 +1701,281 @@
         ]
       }
     },
+    "/api/v1/workouts/history": {
+      "get": {
+        "tags": [
+          "workouts"
+        ],
+        "summary": "History",
+        "operationId": "history_api_v1_workouts_history_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 512
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "date_from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Date From"
+            }
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Date To"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoryPage"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          }
+        }
+      }
+    },
+    "/api/v1/workouts/dashboard": {
+      "get": {
+        "tags": [
+          "workouts"
+        ],
+        "summary": "Dashboard",
+        "operationId": "dashboard_api_v1_workouts_dashboard_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Dashboard"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/workouts/{workout_id}/summary": {
+      "get": {
+        "tags": [
+          "workouts"
+        ],
+        "summary": "Summary",
+        "operationId": "summary_api_v1_workouts__workout_id__summary_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "workout_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Workout Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkoutReport"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          }
+        }
+      }
+    },
     "/api/v1/workouts/{workout_id}": {
       "get": {
         "tags": [
@@ -1868,6 +2143,73 @@
   },
   "components": {
     "schemas": {
+      "Dashboard": {
+        "properties": {
+          "timezone": {
+            "type": "string",
+            "title": "Timezone"
+          },
+          "week_start": {
+            "type": "string",
+            "format": "date",
+            "title": "Week Start"
+          },
+          "week_end_exclusive": {
+            "type": "string",
+            "format": "date",
+            "title": "Week End Exclusive"
+          },
+          "weekly_target": {
+            "type": "integer",
+            "title": "Weekly Target"
+          },
+          "completed_workouts": {
+            "type": "integer",
+            "title": "Completed Workouts"
+          },
+          "completed_sets": {
+            "type": "integer",
+            "title": "Completed Sets"
+          },
+          "active_seconds": {
+            "type": "integer",
+            "title": "Active Seconds"
+          },
+          "volume_kg": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Volume Kg"
+          },
+          "days": {
+            "items": {
+              "$ref": "#/components/schemas/TrainingDay"
+            },
+            "type": "array",
+            "title": "Days"
+          },
+          "recent": {
+            "items": {
+              "$ref": "#/components/schemas/WorkoutSummary"
+            },
+            "type": "array",
+            "title": "Recent"
+          }
+        },
+        "type": "object",
+        "required": [
+          "timezone",
+          "week_start",
+          "week_end_exclusive",
+          "weekly_target",
+          "completed_workouts",
+          "completed_sets",
+          "active_seconds",
+          "volume_kg",
+          "days",
+          "recent"
+        ],
+        "title": "Dashboard"
+      },
       "ErrorDetail": {
         "properties": {
           "code": {
@@ -2139,6 +2481,39 @@
         "type": "object",
         "title": "HealthResponse"
       },
+      "HistoryPage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/WorkoutSummary"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "timezone": {
+            "type": "string",
+            "title": "Timezone"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "next_cursor",
+          "timezone"
+        ],
+        "title": "HistoryPage"
+      },
       "LoginRequest": {
         "properties": {
           "email": {
@@ -2185,6 +2560,67 @@
           "name"
         ],
         "title": "MuscleResponse"
+      },
+      "PersonalRecord": {
+        "properties": {
+          "exercise_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Exercise Id"
+          },
+          "exercise_name": {
+            "type": "string",
+            "title": "Exercise Name"
+          },
+          "load_convention": {
+            "type": "string",
+            "title": "Load Convention"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "value": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Value"
+          },
+          "previous_value": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Value"
+          },
+          "weight_kg": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight Kg"
+          }
+        },
+        "type": "object",
+        "required": [
+          "exercise_id",
+          "exercise_name",
+          "load_convention",
+          "kind",
+          "value",
+          "previous_value",
+          "weight_kg"
+        ],
+        "title": "PersonalRecord"
       },
       "PlannedSet-Input": {
         "properties": {
@@ -2738,6 +3174,25 @@
         ],
         "title": "TokenResponse"
       },
+      "TrainingDay": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "workouts": {
+            "type": "integer",
+            "title": "Workouts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "workouts"
+        ],
+        "title": "TrainingDay"
+      },
       "UserResponse": {
         "properties": {
           "id": {
@@ -2913,6 +3368,30 @@
           "load_convention_snapshot"
         ],
         "title": "WorkoutExerciseResponse"
+      },
+      "WorkoutReport": {
+        "properties": {
+          "workout": {
+            "$ref": "#/components/schemas/WorkoutResponse"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/WorkoutSummary"
+          },
+          "records": {
+            "items": {
+              "$ref": "#/components/schemas/PersonalRecord"
+            },
+            "type": "array",
+            "title": "Records"
+          }
+        },
+        "type": "object",
+        "required": [
+          "workout",
+          "summary",
+          "records"
+        ],
+        "title": "WorkoutReport"
       },
       "WorkoutResponse": {
         "properties": {
@@ -3212,6 +3691,63 @@
         ],
         "title": "WorkoutStart"
       },
+      "WorkoutSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          },
+          "finished_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Finished At"
+          },
+          "active_seconds": {
+            "type": "integer",
+            "title": "Active Seconds"
+          },
+          "exercise_count": {
+            "type": "integer",
+            "title": "Exercise Count"
+          },
+          "completed_sets": {
+            "type": "integer",
+            "title": "Completed Sets"
+          },
+          "skipped_sets": {
+            "type": "integer",
+            "title": "Skipped Sets"
+          },
+          "volume_kg": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Volume Kg"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "started_at",
+          "finished_at",
+          "active_seconds",
+          "exercise_count",
+          "completed_sets",
+          "skipped_sets",
+          "volume_kg"
+        ],
+        "title": "WorkoutSummary"
+      },
       "WorkoutSync": {
         "properties": {
           "version": {
@@ -3229,7 +3765,8 @@
             "enum": [
               "active",
               "paused",
-              "cancelled"
+              "cancelled",
+              "completed"
             ],
             "title": "Status"
           },

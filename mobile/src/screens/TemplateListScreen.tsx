@@ -7,7 +7,9 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { RootStackParams } from "../navigation/RootNavigator";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
@@ -22,6 +24,7 @@ export function TemplateListScreen({
   navigation,
 }: NativeStackScreenProps<WorkoutStackParams, "TemplateList">) {
   const { session } = useAuth();
+  const root = useNavigation<NativeStackNavigationProp<RootStackParams>>();
   const api = useMemo(() => templateApi(session), [session]);
   const [page, setPage] = useState<TemplatePage>({
     items: [],
@@ -88,6 +91,11 @@ export function TemplateListScreen({
         ListHeaderComponent={
           <View style={styles.header}>
             <WorkoutBanner />
+            <Button
+              label="Histórico de treinos"
+              variant="secondary"
+              onPress={() => root.navigate("History")}
+            />
             <Text variant="label" style={{ color: theme.colors.accent }}>
               WORKOUT / PLANOS
             </Text>

@@ -123,6 +123,12 @@ def sync(db: Session, user_id: UUID, workout_id: UUID, data: WorkoutSync) -> Wor
         )
     if row.status not in ("active", "paused"):
         raise DomainError("workout_closed", "Este treino já está encerrado.", 409)
+    if data.status == "completed" and not any(
+        s.completed_at for e in data.exercises for s in e.sets
+    ):
+        raise DomainError(
+            "empty_workout", "Conclui pelo menos uma série antes de finalizar o treino.", 422
+        )
     now = utcnow()
     end = data.finished_at or data.paused_at or now
     if end < row.started_at or end > now + timedelta(minutes=5):

@@ -1,6 +1,7 @@
 # Modelo relacional completo (proposta; implementação incremental)
 
-Estado M5: identidade, biblioteca, planos e treinos implementados nas migrações 0001–0004. O restante modelo
+Estado M6: identidade, biblioteca, planos e treinos implementados nas migrações 0001–0004.
+Conclusão, resumos, histórico, PRs básicos e dashboard semanal implementados sem nova migração. O restante modelo
 continua proposta. Favoritos false removem a linha de user_exercises; o flag existe para
 evoluir preferências sem duplicar exercícios. Catálogo/privados são diferenciados por owner_id.
 
@@ -49,6 +50,15 @@ dentro de transação. Posição reordenada atomicamente com UNIQUE deferrable.
 PRs, duração ativa e volume são derivados de sets/sessões concluídos; sem tabela duplicada
 de records inicialmente. Consultar record anterior excluindo a sessão atual. Para PRs recentes,
 comparar cronologicamente com o máximo anterior. Materializar só após medir desempenho.
+
+M6 considera apenas `status=completed` nas consultas de histórico/dashboard/PRs.
+A finalização reutiliza `workout_mutations`, lock e versão do PUT; exige pelo menos uma
+série concluída e fecha o treino para novas alterações. O replay exato continua permitido.
+PRs são agrupados por exercise_id e convenção snapshot; repetições também pela carga
+decimal exata. Séries de aquecimento/incompletas, peso corporal e assistência não geram
+PRs nem volume externo. Valores por mão não são multiplicados por dois.
+Ordenação cronológica usa (started_at,id); limites diários/semanais respeitam timezone
+IANA e mudanças de hora. Ver milestone-6.md para as regras completas.
 
 ## V2 — progresso
 

@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { RootStackParams } from "../navigation/RootNavigator";
 import { ActivityIndicator, Alert, Share, View } from "react-native";
 import * as Crypto from "expo-crypto";
 import { Screen } from "../components/ui/Screen";
@@ -13,6 +16,7 @@ import {
   cancelWorkout,
   clockText,
   elapsed,
+  finishWorkout,
   freshExercise,
   remaining,
   togglePause,
@@ -23,6 +27,8 @@ import { latestRecovery } from "../features/workouts/storage";
 import { theme } from "../theme";
 
 export function ActiveWorkoutScreen() {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParams>>();
   const { user, offline } = useAuth();
   const { local, busy, ready, error, storageError, controller } = useWorkout();
   const [now, setNow] = useState(Date.now());
@@ -140,11 +146,31 @@ export function ActiveWorkoutScreen() {
             !local.pending &&
             !local.conflict && (
               <Button
-                label="Corrigir treino antes de cancelar"
+                label="Corrigir treino antes de encerrar"
                 variant="secondary"
-                onPress={() => controller.correctCancellation()}
+                onPress={() => controller.correctClosure()}
               />
             )}
+          {workout.status === "completed" && (
+            <Card>
+              <Text variant="section">
+                {pending ? "Conclusão por sincronizar" : "Treino concluído"}
+              </Text>
+              <Text muted>
+                {pending
+                  ? "A conclusão está guardada no telemóvel. Sincroniza quando tiveres ligação para consultar o resumo e atualizar o histórico."
+                  : "Os resultados já estão disponíveis no teu histórico."}
+              </Text>
+              {!pending && !local?.conflict && (
+                <Button
+                  label="Ver resumo"
+                  onPress={() =>
+                    navigation.replace("WorkoutSummary", { id: workout.id })
+                  }
+                />
+              )}
+            </Card>
+          )}
           {!closed && (
             <>
               <Button
@@ -278,6 +304,35 @@ export function ActiveWorkoutScreen() {
             editable={!disabled}
             onChangeText={(notes) => controller.edit((w) => ({ ...w, notes }))}
           />
+          {!closed && (
+            <Button
+              label="Finalizar treino"
+              disabled={disabled}
+              onPress={() => {
+                const sets = workout.exercises.flatMap((e) => e.sets);
+                const done = sets.filter((s) => s.completed_at).length;
+                if (!done) {
+                  Alert.alert(
+                    "Ainda não há séries concluídas",
+                    "Regista pelo menos uma série antes de finalizar.",
+                  );
+                  return;
+                }
+                Alert.alert(
+                  "Finalizar treino?",
+                  `${done} séries concluídas. ${sets.length - done} séries por realizar ficam fora dos resultados. Depois de sincronizado, o treino fica fechado.`,
+                  [
+                    { text: "Continuar treino", style: "cancel" },
+                    {
+                      text: "Finalizar",
+                      onPress: () =>
+                        controller.edit((w) => finishWorkout(w, Date.now())),
+                    },
+                  ],
+                );
+              }}
+            />
+          )}
           {!closed && (
             <Button
               label="Cancelar treino"

@@ -300,12 +300,12 @@ export class WorkoutController {
       }
     }
   }
-  correctCancellation() {
+  correctClosure() {
     const local = this.state.local;
     if (
       this.disposed ||
       !local?.workout ||
-      local.workout.status !== "cancelled" ||
+      !["cancelled", "completed"].includes(local.workout.status) ||
       local.pending ||
       local.conflict ||
       local.revision === local.ackRevision

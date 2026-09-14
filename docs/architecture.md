@@ -77,13 +77,17 @@ sem implementar sincronização geral. Flush/retry explícito ao recuperar rede.
 estado pendente; só confirmar sincronização após resposta do servidor. Cronómetro baseado
 em timestamps, não em número de ticks; pausa acumula duração e descanso guarda deadline.
 
-Estado M5: escrita SQLite síncrona de um agregado limitado ao treino, com WAL e synchronous=FULL,
+Estado M6: escrita SQLite síncrona de um agregado limitado ao treino, com WAL e synchronous=FULL,
 antes de publicar a alteração na UI. O pedido pendente e a sua revisão também são persistidos
 antes do envio; uma resposta antiga nunca substitui edições locais mais recentes.
 Conflitos entre dispositivos preservam a cópia local e pedem resolução explícita.
 SecureStore guarda refresh e identidade em cache no mesmo envelope; access continua só
 em memória. A cache permite abrir o treino offline, sem contornar autenticação no servidor.
-Detalhes, limites e testes em milestone-5.md. Finalização/volume/PRs ainda são M6.
+Detalhes da recuperação em milestone-5.md. M6 usa a mesma fila para finalizar com
+`status=completed`; só publica acesso ao resumo após confirmar a revisão no servidor.
+O histórico é paginado por (started_at,id), com datas no fuso do Perfil. Resumos, volume,
+PRs e dashboard são calculados no backend, sem cache de métricas nem dados fictícios.
+Regras, limites e testes em milestone-6.md.
 
 ## Navegação e experiência
 

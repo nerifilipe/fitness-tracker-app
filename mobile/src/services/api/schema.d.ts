@@ -289,6 +289,57 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/workouts/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** History */
+    get: operations["history_api_v1_workouts_history_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workouts/dashboard": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Dashboard */
+    get: operations["dashboard_api_v1_workouts_dashboard_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workouts/{workout_id}/summary": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Summary */
+    get: operations["summary_api_v1_workouts__workout_id__summary_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/workouts/{workout_id}": {
     parameters: {
       query?: never;
@@ -311,6 +362,35 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    /** Dashboard */
+    Dashboard: {
+      /** Timezone */
+      timezone: string;
+      /**
+       * Week Start
+       * Format: date
+       */
+      week_start: string;
+      /**
+       * Week End Exclusive
+       * Format: date
+       */
+      week_end_exclusive: string;
+      /** Weekly Target */
+      weekly_target: number;
+      /** Completed Workouts */
+      completed_workouts: number;
+      /** Completed Sets */
+      completed_sets: number;
+      /** Active Seconds */
+      active_seconds: number;
+      /** Volume Kg */
+      volume_kg: string;
+      /** Days */
+      days: components["schemas"]["TrainingDay"][];
+      /** Recent */
+      recent: components["schemas"]["WorkoutSummary"][];
+    };
     /** ErrorDetail */
     ErrorDetail: {
       /** Code */
@@ -434,6 +514,15 @@ export interface components {
        */
       status: "ok";
     };
+    /** HistoryPage */
+    HistoryPage: {
+      /** Items */
+      items: components["schemas"]["WorkoutSummary"][];
+      /** Next Cursor */
+      next_cursor: string | null;
+      /** Timezone */
+      timezone: string;
+    };
     /** LoginRequest */
     LoginRequest: {
       /**
@@ -455,6 +544,26 @@ export interface components {
       slug: string;
       /** Name */
       name: string;
+    };
+    /** PersonalRecord */
+    PersonalRecord: {
+      /**
+       * Exercise Id
+       * Format: uuid
+       */
+      exercise_id: string;
+      /** Exercise Name */
+      exercise_name: string;
+      /** Load Convention */
+      load_convention: string;
+      /** Kind */
+      kind: string;
+      /** Value */
+      value: string;
+      /** Previous Value */
+      previous_value: string | null;
+      /** Weight Kg */
+      weight_kg: string | null;
     };
     /** PlannedSet */
     "PlannedSet-Input": {
@@ -675,6 +784,16 @@ export interface components {
       expires_in: number;
       user: components["schemas"]["UserResponse"];
     };
+    /** TrainingDay */
+    TrainingDay: {
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Workouts */
+      workouts: number;
+    };
     /** UserResponse */
     UserResponse: {
       /**
@@ -751,6 +870,13 @@ export interface components {
        */
       load_convention_snapshot:
         "total" | "per_hand" | "none" | "added" | "assistance";
+    };
+    /** WorkoutReport */
+    WorkoutReport: {
+      workout: components["schemas"]["WorkoutResponse"];
+      summary: components["schemas"]["WorkoutSummary"];
+      /** Records */
+      records: components["schemas"]["PersonalRecord"][];
     };
     /** WorkoutResponse */
     WorkoutResponse: {
@@ -845,6 +971,36 @@ export interface components {
       /** Template Version */
       template_version: number;
     };
+    /** WorkoutSummary */
+    WorkoutSummary: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Name */
+      name: string;
+      /**
+       * Started At
+       * Format: date-time
+       */
+      started_at: string;
+      /**
+       * Finished At
+       * Format: date-time
+       */
+      finished_at: string;
+      /** Active Seconds */
+      active_seconds: number;
+      /** Exercise Count */
+      exercise_count: number;
+      /** Completed Sets */
+      completed_sets: number;
+      /** Skipped Sets */
+      skipped_sets: number;
+      /** Volume Kg */
+      volume_kg: string;
+    };
     /** WorkoutSync */
     WorkoutSync: {
       /** Version */
@@ -858,7 +1014,7 @@ export interface components {
        * Status
        * @enum {string}
        */
-      status: "active" | "paused" | "cancelled";
+      status: "active" | "paused" | "cancelled" | "completed";
       /** Paused At */
       paused_at?: string | null;
       /** Paused Seconds */
@@ -2112,6 +2268,181 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["WorkoutResponse"] | null;
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  history_api_v1_workouts_history_get: {
+    parameters: {
+      query?: {
+        cursor?: string | null;
+        limit?: number;
+        date_from?: string | null;
+        date_to?: string | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HistoryPage"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  dashboard_api_v1_workouts_dashboard_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Dashboard"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  summary_api_v1_workouts__workout_id__summary_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        workout_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["WorkoutReport"];
         };
       };
       /** @description Unauthorized */

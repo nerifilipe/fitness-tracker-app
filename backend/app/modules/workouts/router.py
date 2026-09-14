@@ -1,11 +1,13 @@
+from datetime import date
+from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 
 from app.core.errors import ErrorResponse
 from app.db.session import DatabaseSession
 from app.modules.auth.dependencies import CurrentUser
-from app.modules.workouts import service
+from app.modules.workouts import reports, service
 from app.modules.workouts.schemas import (
     WorkoutResponse,
     WorkoutStart,
@@ -28,6 +30,28 @@ def start(data: WorkoutStart, user: CurrentUser, db: DatabaseSession) -> Workout
 @router.get("/active", response_model=WorkoutResponse | None)
 def active(user: CurrentUser, db: DatabaseSession) -> WorkoutResponse | None:
     return service.active(db, user.id)
+
+
+@router.get("/history", response_model=reports.HistoryPage)
+def history(
+    user: CurrentUser,
+    db: DatabaseSession,
+    cursor: Annotated[str | None, Query(max_length=512)] = None,
+    limit: Annotated[int, Query(ge=1, le=50)] = 20,
+    date_from: date | None = None,
+    date_to: date | None = None,
+) -> reports.HistoryPage:
+    return reports.history(db, user, cursor, limit, date_from, date_to)
+
+
+@router.get("/dashboard", response_model=reports.Dashboard)
+def dashboard(user: CurrentUser, db: DatabaseSession) -> reports.Dashboard:
+    return reports.dashboard(db, user)
+
+
+@router.get("/{workout_id}/summary", response_model=reports.WorkoutReport)
+def summary(workout_id: UUID, user: CurrentUser, db: DatabaseSession) -> reports.WorkoutReport:
+    return reports.report(db, user.id, workout_id)
 
 
 @router.get("/{workout_id}", response_model=WorkoutResponse)

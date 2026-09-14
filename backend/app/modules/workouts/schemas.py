@@ -46,7 +46,7 @@ class WorkoutExerciseInput(Input):
 class WorkoutSync(Input):
     version: Annotated[int, Field(ge=1)]
     mutation_id: UUID
-    status: Literal["active", "paused", "cancelled"]
+    status: Literal["active", "paused", "cancelled", "completed"]
     paused_at: AwareDatetime | None = None
     paused_seconds: Annotated[int, Field(ge=0, le=31536000)]
     finished_at: AwareDatetime | None = None
@@ -58,8 +58,10 @@ class WorkoutSync(Input):
     def invariants(self):
         if (self.status == "paused") != (self.paused_at is not None):
             raise ValueError("Invalid pause state")
-        if (self.status == "cancelled") != (self.finished_at is not None):
+        if (self.status in ("cancelled", "completed")) != (self.finished_at is not None):
             raise ValueError("Invalid finish state")
+        if self.status == "completed" and self.rest_deadline is not None:
+            raise ValueError("Completed workouts cannot have a running rest timer")
         ids = [e.id for e in self.exercises]
         sets = [s.id for e in self.exercises for s in e.sets]
         if len(set(ids)) != len(ids) or len(set(sets)) != len(sets):

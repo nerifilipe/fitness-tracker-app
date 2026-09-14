@@ -3,10 +3,10 @@
 App mobile de fitness pessoal e para portefólio. React Native + Expo + TypeScript,
 FastAPI + SQLAlchemy + PostgreSQL. Licença MIT.
 
-**Estado: M5 — treino ativo com recuperação local.** Identidade, biblioteca, planos e
-execução de treino com séries, descanso, pausa/cancelamento, snapshots e sincronização
-idempotente. SQLite preserva o treino no telemóvel. Conclusão, histórico e métricas ficam
-para M6; esta etapa ainda não tem um botão para finalizar um treino como concluído.
+**Estado: M6 — conclusão, histórico e resultados.** Identidade, biblioteca, planos e
+execução de treino com recuperação local. Finalização idempotente, resumo com volume e
+marcas pessoais, histórico paginado com filtro de datas e Home com resultados semanais
+reais. Validação dos fluxos em dispositivos Android/iOS fica para M7.
 
 - [Arquitetura, navegação, design system e milestones](docs/architecture.md)
 - [Schema completo, relações, índices e cascades](docs/database.md)
@@ -15,6 +15,7 @@ para M6; esta etapa ainda não tem um botão para finalizar um treino como concl
 - [Biblioteca, seed e verificações de M3](docs/milestone-3.md)
 - [Planos de treino, regras de edição e verificações de M4](docs/milestone-4.md)
 - [Treino ativo, recuperação e verificações de M5](docs/milestone-5.md)
+- [Conclusão, histórico, resultados e verificações de M6](docs/milestone-6.md)
 
 ## Executar localmente (PowerShell)
 
@@ -103,6 +104,13 @@ exercícios e fechar completamente o Expo Go. Ao reabrir, usa **Retomar treino**
 ou em Workout. Desliga a rede, regista uma série, fecha/reabre e confirma a recuperação;
 depois liga a rede e toca em **Sincronizar agora**. Cancelar preserva o registo como cancelado.
 O cronómetro de descanso não envia notificações quando a app está fechada.
+
+Depois de registar pelo menos uma série, toca em **Finalizar treino**. A conclusão
+também fica guardada sem rede; sincroniza para abrir **Ver resumo**. Séries não realizadas
+ficam identificadas no detalhe e excluídas dos resultados. Abre **Ver histórico** na Home
+ou **Histórico de treinos** em Workout. A Home mostra a semana de segunda a domingo no
+fuso do Perfil, objetivo semanal e sessões recentes. Os resumos e o histórico requerem
+rede; erros de carregamento não são apresentados como resultados vazios.
 
 ## Atualizar o contrato da API
 
