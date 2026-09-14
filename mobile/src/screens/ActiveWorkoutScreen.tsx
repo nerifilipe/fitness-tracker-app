@@ -40,6 +40,12 @@ export function ActiveWorkoutScreen() {
     return () => clearInterval(timer);
   }, []);
   const workout = local?.workout;
+  const completedSets =
+    workout?.exercises.reduce(
+      (total, exercise) =>
+        total + exercise.sets.filter((set) => set.completed_at).length,
+      0,
+    ) ?? 0;
   const closed = workout && !["active", "paused"].includes(workout.status);
   const pending =
     local &&
@@ -119,12 +125,8 @@ export function ActiveWorkoutScreen() {
                 : closed
                   ? "TREINO ENCERRADO"
                   : "TEMPO ATIVO"}{" "}
-              ·{" "}
-              {workout.exercises.reduce(
-                (n, e) => n + e.sets.filter((s) => s.completed_at).length,
-                0,
-              )}{" "}
-              séries registadas
+              · {completedSets}{" "}
+              {completedSets === 1 ? "série registada" : "séries registadas"}
             </Text>
           </View>
           <Text muted>
@@ -320,7 +322,7 @@ export function ActiveWorkoutScreen() {
                 }
                 Alert.alert(
                   "Finalizar treino?",
-                  `${done} séries concluídas. ${sets.length - done} séries por realizar ficam fora dos resultados. Depois de sincronizado, o treino fica fechado.`,
+                  `${done} ${done === 1 ? "série concluída" : "séries concluídas"}. Por realizar: ${sets.length - done}. Só as séries concluídas contam para os resultados. Depois de sincronizado, o treino fica fechado.`,
                   [
                     { text: "Continuar treino", style: "cancel" },
                     {

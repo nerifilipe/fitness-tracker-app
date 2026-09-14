@@ -100,7 +100,7 @@ export function HomeScreen() {
                     {["S", "T", "Q", "Q", "S", "S", "D"][index]}
                   </Text>
                   <Text
-                    accessibilityLabel={`${day.date}: ${day.workouts} treinos`}
+                    accessibilityLabel={`${day.date}: ${day.workouts} ${day.workouts === 1 ? "treino" : "treinos"}`}
                     style={{
                       color: day.workouts
                         ? theme.colors.accent
@@ -113,8 +113,9 @@ export function HomeScreen() {
               ))}
             </View>
             <Text>
-              {data.completed_sets} séries · {clockText(data.active_seconds)} de
-              tempo ativo
+              {data.completed_sets}{" "}
+              {data.completed_sets === 1 ? "série" : "séries"} ·{" "}
+              {clockText(data.active_seconds)} de tempo ativo
             </Text>
             <Text>{numberText(data.volume_kg)} kg·reps de volume</Text>
             <Text muted>

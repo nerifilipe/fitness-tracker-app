@@ -28,11 +28,13 @@ export function SummaryCard({
       <Text muted>{dateText(summary.started_at, timezone)}</Text>
       <Text>
         {clockText(summary.active_seconds)} de tempo ativo ·{" "}
-        {summary.exercise_count} exercícios
+        {summary.exercise_count}{" "}
+        {summary.exercise_count === 1 ? "exercício" : "exercícios"}
       </Text>
       <Text>
-        {summary.completed_sets} séries concluídas · {summary.skipped_sets} por
-        realizar
+        {summary.completed_sets}{" "}
+        {summary.completed_sets === 1 ? "série concluída" : "séries concluídas"}{" "}
+        · {summary.skipped_sets} por realizar
       </Text>
       <Text>{numberText(summary.volume_kg)} kg·reps de volume</Text>
       {onPress && (
