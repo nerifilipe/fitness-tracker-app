@@ -3,21 +3,57 @@
 App mobile de fitness pessoal e para portefólio. React Native + Expo + TypeScript,
 FastAPI + SQLAlchemy + PostgreSQL. Licença MIT.
 
-**Estado: M12 — API publicada e APK Android disponível.**
-API no Render Free com PostgreSQL Neon Free, verificada no ambiente online.
-[Descarregar o APK 0.1.0 (2)](https://expo.dev/artifacts/eas/mPO6dddmeKd-IrB6CpaMe0ebkzlz3hpnfxSqXFXz7OM.apk)
-no Android e instalar: funciona sem Expo Go e sem o PC. A base online é nova;
-criar conta na app. A instalação e a validação no telemóvel continuam pendentes.
+**Estado: M12 — API online e APK instalado no Android.**
+Instalação e funcionamento confirmados pelo utilizador após a entrega. API alojada
+no Render Free, PostgreSQL no Neon Free e APK compilado e assinado pelo Expo EAS.
 
-Cada exercício pode
-recuperar a última sessão e sugerir manter, acrescentar uma repetição ou subir a
-carga, com preenchimento das séries por realizar e opção de desfazer. Inclui treinos
-com recuperação local, nutrição, peso/medidas e evolução da força. O fluxo principal
-de treino foi validado num Android em M7; os ecrãs M8–M11 têm verificação automatizada,
-com validação por toque pendente.
+## Experimentar no Android
+
+1. [Descarregar o APK 0.1.0 (2)](https://expo.dev/artifacts/eas/mPO6dddmeKd-IrB6CpaMe0ebkzlz3hpnfxSqXFXz7OM.apk)
+   no telemóvel e abrir o ficheiro em Downloads para instalar.
+2. Criar uma conta na app. A base online é independente da base de desenvolvimento;
+   contas e dados locais não são transferidos automaticamente.
+3. Criar um plano, iniciar um treino ou pesquisar um alimento em Nutrição.
+
+Funciona sem Expo Go e sem o PC. É necessária ligação à Internet para autenticar,
+carregar dados e sincronizar; o treino já iniciado permite registar séries offline.
+O primeiro pedido após inatividade pode demorar enquanto o serviço gratuito acorda.
+O APK espera até 90 segundos por pedido.
+
+[Página do build no Expo](https://expo.dev/accounts/nerifilipe/projects/fitness-tracker/builds/07348244-3818-4517-89be-3985a2fa6a7b)
+· [API online](https://fitness-tracker-api-ku46.onrender.com/api/v1/health)
+· [Publicação e atualização](docs/milestone-12.md)
+
+## Funcionalidades
+
+- **Treinos:** biblioteca com 24 exercícios iniciais, favoritos, exercícios próprios,
+  planos editáveis, séries, cargas, repetições, RIR e cronómetro de descanso.
+- **Recuperação:** treino ativo guardado em SQLite, pausa/retoma, recuperação após
+  fechar a app e sincronização das alterações feitas offline.
+- **Histórico:** resumos de sessões, volume, recordes e dashboard semanal.
+- **Nutrição:** pesquisa no Open Food Facts com calorias e macros preenchidos,
+  recentes, favoritos, porções rápidas e repetição de refeições de outro dia.
+- **Progresso:** peso e medidas corporais, gráficos e evolução da força por exercício.
+- **Progressão:** sugestões com base no último treino e preenchimento das séries
+  por realizar, com opção de desfazer.
+
+## Validação e limites atuais
+
+A API online passou as verificações de saúde, ligação à base de dados e bloqueio
+sem autenticação. O APK foi compilado e inspecionado; o utilizador confirmou que
+conseguiu instalá-lo e utilizá-lo. Esta confirmação não representa uma execução
+documentada de todos os cenários de teste.
+
+O fluxo principal de treino teve validação Android em M7. Nutrição, medidas,
+evolução da força e sugestões têm testes automatizados; a revisão detalhada de
+todos esses ecrãs e dos cenários offline do APK continua por registar. A entrega
+atual é um APK de distribuição interna; não há publicação nas lojas nem validação
+em dispositivo iOS. As quotas dos serviços gratuitos continuam a aplicar-se.
+
+## Documentação
 
 - [Arquitetura, navegação, design system e milestones](docs/architecture.md)
-- [Schema completo, relações, índices e cascades](docs/database.md)
+- [Modelo de dados, relações, índices e cascades](docs/database.md)
 - [Entrega e verificações de M1](docs/milestone-1.md)
 - [Entrega, contrato de autenticação e verificações de M2](docs/milestone-2.md)
 - [Biblioteca, seed e verificações de M3](docs/milestone-3.md)
@@ -29,7 +65,7 @@ com validação por toque pendente.
 - [Peso, medidas, gráficos e verificações de M9](docs/milestone-9.md)
 - [Evolução da força, recordes e comparação de sessões em M10](docs/milestone-10.md)
 - [Sugestões de progressão e preenchimento das séries em M11](docs/milestone-11.md)
-- [Publicar sem mensalidade e gerar o APK: preparação M12](docs/milestone-12.md)
+- [API publicada, APK instalado e manutenção de M12](docs/milestone-12.md)
 
 ## Executar localmente (PowerShell)
 

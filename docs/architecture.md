@@ -6,21 +6,30 @@ Em 13/09/2026, o repositório continha apenas README.md, .gitignore e LICENSE (M
 Não existiam aplicações, dependências, testes, dados, AGENTS.md ou código a migrar.
 A licença é preservada e o ignore é complementado para Python/Expo.
 
-## Estrutura final proposta
+## Estado atual — M12
+
+Estão implementados autenticação, biblioteca, planos, treino com recuperação local,
+histórico, nutrição, medidas corporais, evolução da força e sugestões de progressão.
+A API está publicada no Render com PostgreSQL Neon; o APK Android foi gerado pelo
+Expo EAS e o utilizador confirmou a instalação e o funcionamento. Os detalhes da
+entrega e os limites de validação estão em [M12](milestone-12.md).
+
+O plano inicial foi concretizado nas milestones M1–M12. As propostas futuras são
+identificadas separadamente; não fazem parte da aplicação entregue.
+
+## Estrutura implementada
 
 ```text
 mobile/
   App.tsx
   src/
     navigation/             # stack de autenticação, tabs e treino fullscreen
-    screens/                # home, workout, history, profile; progress/nutrition depois
+    screens/                # home, workout, history, profile, progress e nutrition
     components/ui/          # primitivas do design system
-    features/               # auth, exercises, workouts; outros quando necessários
+    features/               # auth, exercises, templates, workouts, history, nutrition, progress
     hooks/
     services/api/           # HTTP e tipos gerados do OpenAPI
     theme/
-    types/
-    utilities/
 backend/
   app/
     main.py
@@ -33,16 +42,18 @@ backend/
       exercises/
       templates/            # prescrição de treino (M4), separada da execução
       workouts/
-      progress/             # V2
-      nutrition/            # V3
-      analytics/            # V2+, consultas derivadas
-  migrations/               # Alembic a partir da primeira entidade
+      progress/             # medidas corporais e consultas de evolução da força
+      nutrition/            # diário, alimentos, objetivos e Open Food Facts
+  migrations/               # Alembic 0001–0006
+  scripts/                  # configuração, seed, contrato e publicação
   tests/
 docs/
 compose.yaml
+compose.release-test.yaml
+render.yaml
 ```
 
-Esta árvore é o destino, não uma lista de pastas vazias a criar já. Monólito modular:
+Monólito modular:
 React Native → REST → routers Pydantic → services → SQLAlchemy → PostgreSQL.
 Routes validam e autorizam, services coordenam regras e transações. Sem microserviços,
 repository genérico, Redis ou filas enquanto não houver necessidade concreta.
@@ -60,7 +71,7 @@ JWT access de curta duração em memória; refresh opaco, rotativo, com hash no 
 e armazenamento nativo SecureStore. Logout revoga a sessão; rotação deteta reutilização.
 Password com Argon2, autorização por proprietário em todos os recursos e rate limiting
 no login antes de exposição pública. HTTPS em produção. Nenhum segredo em EXPO_PUBLIC_*.
-Implementar este contrato em M2; M1 só expõe health/readiness sem dados pessoais.
+Contrato implementado em M2; health/readiness continuam sem expor dados pessoais.
 
 Estado M2: identidade implementada (ver milestone-2.md). Erros de validação agora usam
 o mesmo envelope de erro, omitindo inputs para não devolver passwords/tokens em respostas.
@@ -91,18 +102,18 @@ Regras, limites e testes em milestone-6.md.
 
 ## Navegação e experiência
 
-V1: tabs Home, Workout, Profile. Histórico acessível por Workout e Home; biblioteca e
-editor de template num stack. Treino ativo em stack fullscreen, com acesso rápido à sessão
-em curso. Evitar tabs de funcionalidades indisponíveis. V2 acrescenta Progress; V3 Nutrition,
-resultando em Home / Workout / Progress / Nutrition / Profile.
+Tabs atuais: Home / Workout / Progress / Nutrition / Profile. Histórico acessível
+por Workout e Home; biblioteca e editor de template num stack. Treino ativo em
+stack fullscreen, com acesso rápido à sessão em curso. Progresso inclui medidas
+corporais e evolução da força; Nutrição inclui diário e pesquisa de alimentos.
 
 Autenticação num stack separado. No treino: tabela editável, teclado numérico, último
 resultado por exercício, conclusão de set com um toque, descanso automático ajustável,
 ações secundárias em menu e confirmação para cancelar. Back não elimina rascunho.
 Home mostra apenas dados reais e estados vazios úteis; sem métricas fictícias.
 
-Escolha inicial para M2: React Navigation (native stack + bottom tabs), com parâmetros
-tipados e sem necessidade de rotas por ficheiro. M1 ainda não precisa de um navigator.
+React Navigation (native stack + bottom tabs), introduzido em M2, com parâmetros
+tipados e sem necessidade de rotas por ficheiro.
 
 ## Design system inicial
 
@@ -115,7 +126,11 @@ Button, Card, Input, Modal, Icon, loading/empty/error partilham tokens. Criar ap
 primitivas usadas na milestone. Ícones de uma única família ao introduzir navegação.
 Animações curtas 150–220ms respeitam reduced motion; nunca atrasam registo de sets.
 
-## Milestones V1 e critérios de conclusão
+## Milestones e âmbito
+
+Os pontos abaixo descrevem o âmbito de cada milestone. As evidências de validação
+e as pendências constam dos respetivos documentos; a lista não implica que todos
+os critérios tenham sido testados em todos os dispositivos.
 
 1. **Fundação**: Expo TypeScript, tema/primitivas usadas, Home vazia, cliente health,
    FastAPI, settings, sessão SQLAlchemy, PostgreSQL Compose, testes health e guia local.
@@ -132,8 +147,18 @@ Animações curtas 150–220ms respeitam reduced motion; nunca atrasam registo d
 7. **Validação V1**: fluxo completo em Android/iOS, acessibilidade, erros/loading/empty,
    isolamento, recuperação offline, documentação e screenshots para portefólio.
 
-V2 progresso/analytics; V3 nutrição; V4 recomendações determinísticas/insights; V5 AI com
-dados autorizados; V6 integrações e acabamento adicional. Nenhuma destas é implementada em M1.
+8. **Nutrição**: diário com pesquisa Open Food Facts, recentes, favoritos, porções,
+   objetivos e cópia de refeições. Ver [M8](milestone-8.md).
+9. **Medidas corporais**: peso, medidas, histórico editável e gráficos. Ver [M9](milestone-9.md).
+10. **Evolução da força**: gráficos, recordes e comparação entre sessões a partir
+    dos treinos concluídos. Ver [M10](milestone-10.md).
+11. **Progressão**: sugestões determinísticas e preenchimento das séries com opção
+    de desfazer. Ver [M11](milestone-11.md).
+12. **Distribuição Android**: API Render, PostgreSQL Neon e APK Expo EAS, com
+    instalação e funcionamento confirmados pelo utilizador. Ver [M12](milestone-12.md).
+
+AI, integrações externas adicionais, fotografias e publicação nas lojas continuam
+fora da entrega atual. O plano inicial de versões V2–V4 foi concretizado em M8–M11.
 
 ## Decisões a fixar cedo
 
@@ -150,8 +175,10 @@ dados autorizados; V6 integrações e acabamento adicional. Nenhuma destas é im
   timestamps persistidos em UTC. `date` do diário não muda por viajar de timezone.
 - Histórico preserva snapshots: editar template, exercício ou alimento não reescreve o passado.
 - Uma sessão ativa/pausada por utilizador, imposta por índice parcial. Não deixar isto só na UI.
-- Dados e fotografias privados; fotos em object storage com URLs assinados, nunca blob na BD.
-  Eliminar conta deve também agendar remoção de objetos. Retenção/backups a definir antes de deploy.
+- Dados privados por conta. Fotografias ainda não estão implementadas; se forem
+  acrescentadas, usar object storage e definir acesso, retenção e remoção dos objetos.
+  Exportação de dados, eliminação de conta e recuperação de backups não fazem parte
+  dos fluxos documentados desta entrega.
 - Dependências introduzidas quando usadas. Navegação em M2; SQLite em M5; gráficos em V2.
   Lockfiles versionados. Recomenda-se Node LTS em desenvolvimento/CI.
 

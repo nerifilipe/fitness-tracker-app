@@ -2,8 +2,8 @@
 
 ## Estado real da entrega
 
-**API publicada e APK compilado e verificado em 15/09/2026.** Instalação
-e validação nativa continuam pendentes. As três contas foram ligadas pelos fluxos
+**API publicada e APK compilado e verificado em 15/09/2026.** O utilizador
+confirmou posteriormente a instalação e o funcionamento no Android. As três contas foram ligadas pelos fluxos
 oficiais de autenticação no navegador, usando os CLIs.
 
 - API: `https://fitness-tracker-api-ku46.onrender.com/api/v1`
@@ -27,6 +27,22 @@ o teste no dispositivo.
 
 Os serviços já existem: usar os links acima para gerir esta instalação. As secções
 de criação abaixo servem de referência para reproduzir a configuração noutro ambiente.
+
+## Atualizar esta instalação
+
+- **Documentação:** fazer commit/push das alterações; não requer deploy nem novo APK.
+- **Backend:** depois de publicar o commit no GitHub, usar **Manual Deploy** no
+  serviço Render existente. Confirmar `/health`, `/ready` e bloqueio sem autenticação
+  com `backend/scripts/check_deployment.py`. As migrações são aplicadas no arranque.
+- **App:** em `mobile`, executar `npx eas-cli@latest build --platform android --profile preview`
+  na conta já ligada. O ambiente `preview` já contém o URL da API online; o EAS
+  incrementa o versionCode. Instalar o novo APK com a mesma assinatura e identificador.
+- **Registo da entrega:** atualizar o link do APK no README e nesta página, versão,
+  versionCode e verificações efetivamente realizadas. Conservar uma cópia do artefacto
+  fora do Git; o link do build fica como referência da compilação.
+
+Preservar a base Neon, o `JWT_SECRET` no Render e a chave Android no Expo entre
+atualizações. Os ficheiros `.env`, credenciais e binários APK/AAB estão excluídos do Git.
 
 O utilizador escolheu custo zero. A configuração não cria serviços pagos nem uma
 base Render. A utilização fica sujeita às quotas dos planos gratuitos; não ativar
@@ -140,13 +156,18 @@ base de desenvolvimento não são transferidos automaticamente. Permanecem no PC
 uma eventual migração dos dados pessoais deve ser tratada antes de abandonar esse
 ambiente. A instalação própria também tem armazenamento separado do Expo Go.
 
-Depois da instalação, desligar o USB e testar por Wi-Fi ou dados móveis com o PC
+O utilizador confirmou a instalação e o funcionamento do APK no Android. Não foi
+registada uma execução individual de cada cenário abaixo; permanecem como guia
+para uma validação mais completa.
+
+Desligar o USB e testar por Wi-Fi ou dados móveis com o PC
 desligado: registo/login, iniciar e concluir um treino, nutrição, medidas, gráficos
 e sugestões. Para testar offline, iniciar um treino com ligação, ativar modo avião,
 registar séries, reabrir a app e finalmente voltar a ligar para sincronizar.
 
-Esta validação nativa continua pendente. O APK foi compilado pelo EAS e inspecionado
-localmente; ainda não foi instalado nem testado no dispositivo nesta entrega.
+O teste de utilização comunicado pelo utilizador complementa a compilação e a
+inspeção local do APK. Não equivale a uma validação exaustiva de todos os ecrãs,
+acessibilidade, perda de rede ou funcionamento em iOS.
 
 ## Implementação e verificações locais
 
@@ -186,8 +207,6 @@ docker compose -f compose.release-test.yaml -p fitness-release-test up -d --buil
 backend/.venv/Scripts/python backend/scripts/check_deployment.py --api-url http://127.0.0.1:18000/api/v1
 docker compose -f compose.release-test.yaml -p fitness-release-test stop
 ```
-
-Commit sugerido: `chore(deploy): link Expo project and document live Android release`
 
 Referências: [Render Free](https://render.com/docs/free),
 [Render Blueprint](https://render.com/docs/blueprint-spec),

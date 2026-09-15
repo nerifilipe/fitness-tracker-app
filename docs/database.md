@@ -1,12 +1,14 @@
-# Modelo relacional completo (proposta; implementação incremental)
+# Modelo de dados
 
-Estado M6: identidade, biblioteca, planos e treinos implementados nas migrações 0001–0004.
-Conclusão, resumos, histórico, PRs básicos e dashboard semanal implementados sem nova migração. O restante modelo
-continua proposta. Favoritos false removem a linha de user_exercises; o flag existe para
+Estado M12: identidade, biblioteca, planos e treinos nas migrações 0001–0004,
+nutrição em 0005 e medidas corporais em 0006. Histórico, PRs, dashboard, evolução
+da força e sugestões usam os dados existentes, sem tabelas adicionais de métricas.
+O Neon publicado foi verificado na revisão `0006_progress`.
+Favoritos false removem a linha de user_exercises; o flag existe para
 evoluir preferências sem duplicar exercícios. Catálogo/privados são diferenciados por owner_id.
 
-Todas as entidades têm PK UUID, created_at/updated_at timestamptz, salvo tabelas de junção
-com PK composta indicadas. FKs são indexadas quando usadas em joins/filtros. Numeric para
+As chaves são UUID ou compostas, conforme indicado; datas de criação/alteração usam
+timestamptz quando presentes. FKs são indexadas quando usadas em joins/filtros. Numeric para
 carga/medidas/macros; nunca float para persistência. Constraints CHECK de valores não negativos,
 reps inteiras positivas quando concluídas, RIR inteiro 0–10 e posições >=0.
 
@@ -77,25 +79,25 @@ futura tabela `progress_photos` poderá ligar à medição pela mesma conta/data
 object_key único, instante e vista. Analytics de força, frequência, e1RM e volume
 continuam a consultar o histórico V1; não se cria uma tabela por gráfico.
 
-## V3 — nutrição
+## M8 — nutrição implementada
 
 | Tabela | Campos |
 |---|---|
-| nutrition_goals | id, user_id FK, effective_from date, calories, protein_g, carbs_g, fat_g; UNIQUE(user_id,effective_from) |
-| foods | id, owner_id FK users nullable, name, brand nullable, serving_size numeric(9,3)>0, serving_unit, calories, protein_g, carbs_g, fat_g numeric(9,3), archived_at |
-| user_foods | user_id FK, food_id FK, is_favorite; PK(user_id,food_id) |
-| meals | id, user_id FK, date date, meal_type breakfast/lunch/dinner/snack/other, name nullable |
-| meal_entries | id, meal_id FK, food_id FK, servings numeric(9,3)>0, food_name_snapshot, serving_size_snapshot, serving_unit_snapshot, calories_snapshot, protein_g_snapshot, carbs_g_snapshot, fat_g_snapshot |
-| saved_meals | id, user_id FK, name |
-| saved_meal_entries | id, saved_meal_id FK, food_id FK, servings >0, position; UNIQUE(saved_meal_id,position) |
+| nutrition_foods | id UUID, user_id FK, source_code nullable, snapshot JSONB, is_favorite, last_quantity numeric(12,3), last_used_at, created_at; UNIQUE(user_id,source_code) |
+| nutrition_entries | id UUID do cliente, user_id FK, food_id FK, date, meal breakfast/lunch/dinner/snack, quantity numeric(12,3) >0 e <=10000, snapshot JSONB, deleted, created_at, updated_at |
+| nutrition_goals | PK user_id FK, targets JSONB, updated_at; objetivos atuais por conta |
+| nutrition_copies | PK (user_id FK,id UUID), request JSONB, created_at; recibo de cópia idempotente |
 
-Macros nos foods são por porção definida. Snapshot nas entries é também por porção;
-totais = snapshot × servings. Meals representam refeições consumidas, saved_meals representam
-templates; não usar a mesma entidade para ambos. Goals por data efetiva conservam objetivos
-históricos; selecionar o último effective_from <= date. Índices meals(user_id,date,id),
-foods(owner_id,lower(name)), saved_meals(user_id). Não armazenar totais diários duplicados.
+Os alimentos pertencem à biblioteca de cada conta, incluindo os importados do Open
+Food Facts. Favoritos e última quantidade ficam no próprio alimento. Os registos
+preservam snapshots nutricionais; editar a biblioteca não altera o diário passado.
+Índices por (user_id,last_used_at) e (user_id,date) suportam recentes e diário.
+Não existem tabelas separadas de refeições ou favoritos: a refeição é um campo do
+registo e a repetição de outro dia usa recibos de cópia. Os objetivos atuais também
+aparecem nos dias anteriores; histórico de objetivos e templates de refeições
+continuam fora da implementação. Regras completas em [M8](milestone-8.md).
 
-## V4–V6
+## Extensões futuras
 
 Recomendações/insights são resultados de serviços sobre dados existentes; não exigem novas
 tabelas agora. Integrações, partilha e conversas AI terão schemas próprios quando contratos,
@@ -121,28 +123,22 @@ erDiagram
   exercises ||--o{ workout_exercises : identifies
   workout_exercises ||--o{ workout_sets : records
   users ||--o{ body_measurements : measures
-  users ||--o{ progress_photos : owns
-  body_measurements o|--o{ progress_photos : accompanies
-  users ||--o{ nutrition_goals : targets
-  users ||--o{ foods : custom
-  users ||--o{ user_foods : favorites
-  foods ||--o{ user_foods : preferred
-  users ||--o{ meals : consumes
-  meals ||--o{ meal_entries : contains
-  foods ||--o{ meal_entries : identifies
-  users ||--o{ saved_meals : saves
-  saved_meals ||--o{ saved_meal_entries : contains
-  foods ||--o{ saved_meal_entries : references
+  users ||--o| nutrition_goals : targets
+  users ||--o{ nutrition_foods : owns
+  users ||--o{ nutrition_entries : records
+  nutrition_foods ||--o{ nutrition_entries : identifies
+  users ||--o{ nutrition_copies : copies
+  workouts ||--o{ workout_mutations : deduplicates
 ```
 
 CASCADE para filhos exclusivos: template → exercícios → sets planeados; workout → exercícios
-→ sets; meal → entries; saved_meal → entries; junções/favoritos/sessões de auth por utilizador.
-SET NULL para workouts.template_id e progress_photos.measurement_id; snapshots preservam leitura.
-RESTRICT para referências a exercises/foods/muscle_groups: arquivar em uso, não apagar.
-FK owner_id em foods/exercises é RESTRICT para não transformar custom em catálogo global.
-Account deletion é uma transação explícita: eliminar histórico/templates/favoritos/entries antes
-de custom foods/exercises e user; relações diretas user-owned podem usar CASCADE, mas a ordem
-de limpeza dos catálogos referenciados é explícita. Objetos de fotos têm remoção externa idempotente.
+→ sets e recibos de mutação; junções/favoritos/sessões de auth por utilizador.
+SET NULL para workouts.template_id; snapshots preservam leitura. As referências a
+exercises/muscle_groups e nutrition_entries.food_id usam RESTRICT. O owner_id de um
+exercício privado não pode desaparecer e convertê-lo num exercício global.
+Medidas e tabelas de nutrição têm FK user_id com CASCADE. Uma futura operação de
+eliminação de conta terá de respeitar as referências RESTRICT e a ordem de remoção;
+estas cascades não constituem, por si só, um fluxo de eliminação disponível na app.
 
 Todas as referências a recursos privados são verificadas contra o utilizador autenticado;
 um UUID válido não dá acesso. Catálogos globais são legíveis, privados apenas pelo proprietário.
