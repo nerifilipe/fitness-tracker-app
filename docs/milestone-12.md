@@ -160,6 +160,10 @@ O utilizador confirmou a instalação e o funcionamento do APK no Android. Não 
 registada uma execução individual de cada cenário abaixo; permanecem como guia
 para uma validação mais completa.
 
+O README em inglês inclui as [capturas atuais fornecidas pelo utilizador](screenshots/android/release-0.1.0/README.md)
+do início, planos, biblioteca, nutrição e progresso. As imagens mostram o estado
+inicial da conta; não constituem evidência de todos os fluxos de escrita e sincronização.
+
 Desligar o USB e testar por Wi-Fi ou dados móveis com o PC
 desligado: registo/login, iniciar e concluir um treino, nutrição, medidas, gráficos
 e sugestões. Para testar offline, iniciar um treino com ligação, ativar modo avião,
