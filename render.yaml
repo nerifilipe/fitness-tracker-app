@@ -1,0 +1,24 @@
+# Free API + external Neon Free database. No paid Render database is provisioned.
+services:
+  - type: web
+    name: fitness-tracker-api
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    autoDeployTrigger: "off"
+    # Liveness avoids keeping Neon's compute awake with periodic database queries.
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_CONNECT_TIMEOUT
+        value: "15"
+      - key: CORS_ORIGINS
+        value: "[]"
+      # This service is reachable through Render's managed reverse proxy only.
+      - key: FORWARDED_ALLOW_IPS
+        value: "*"

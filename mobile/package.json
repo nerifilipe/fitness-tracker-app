@@ -29,6 +29,8 @@
     "format": "prettier --write src App.tsx",
     "api:types": "npm exec --yes --package=typescript@5.9.3 --package=openapi-typescript@7.13.0 -- openapi-typescript ../docs/openapi.json -o src/services/api/schema.d.ts && prettier --write src/services/api/schema.d.ts",
     "typecheck": "tsc --noEmit",
+    "release:check": "node scripts/check-release.cjs",
+    "eas-build-post-install": "node scripts/check-release.cjs",
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios"

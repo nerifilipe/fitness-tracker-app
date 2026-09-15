@@ -156,3 +156,13 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Android cloud build needs only the mobile project.
+/backend/
+/docs/
+/mobile/tests/
+/mobile/android/
+/mobile/ios/
+compose*.yaml
+render.yaml
+

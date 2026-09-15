@@ -3,7 +3,11 @@
 App mobile de fitness pessoal e para portefólio. React Native + Expo + TypeScript,
 FastAPI + SQLAlchemy + PostgreSQL. Licença MIT.
 
-**Estado: M11 — sugestões de progressão durante o treino.** Cada exercício pode
+**Estado: M12 preparado — publicação e APK pendentes das contas externas.**
+Configuração para Render Free + Neon Free e APK via Expo EAS, com imagem Docker
+validada localmente. A API ainda não foi publicada e ainda não foi gerado um APK.
+
+Cada exercício pode
 recuperar a última sessão e sugerir manter, acrescentar uma repetição ou subir a
 carga, com preenchimento das séries por realizar e opção de desfazer. Inclui treinos
 com recuperação local, nutrição, peso/medidas e evolução da força. O fluxo principal
@@ -23,6 +27,7 @@ com validação por toque pendente.
 - [Peso, medidas, gráficos e verificações de M9](docs/milestone-9.md)
 - [Evolução da força, recordes e comparação de sessões em M10](docs/milestone-10.md)
 - [Sugestões de progressão e preenchimento das séries em M11](docs/milestone-11.md)
+- [Publicar sem mensalidade e gerar o APK: preparação M12](docs/milestone-12.md)
 
 ## Executar localmente (PowerShell)
 

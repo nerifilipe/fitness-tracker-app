@@ -1,4 +1,11 @@
 const baseUrl = process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, "");
+const configuredTimeout = Number(process.env.EXPO_PUBLIC_API_TIMEOUT_MS);
+const requestTimeout =
+  Number.isInteger(configuredTimeout) &&
+  configuredTimeout >= 1000 &&
+  configuredTimeout <= 120000
+    ? configuredTimeout
+    : 10000;
 
 export class ApiError extends Error {
   constructor(
@@ -24,7 +31,7 @@ export const request: Transport = async <T>(
   const abort = () => controller.abort();
   if (options.signal?.aborted) abort();
   options.signal?.addEventListener("abort", abort, { once: true });
-  const timeout = setTimeout(abort, 10000);
+  const timeout = setTimeout(abort, requestTimeout);
   try {
     const response = await fetch(`${baseUrl}${path}`, {
       ...options,
@@ -50,7 +57,7 @@ export const request: Transport = async <T>(
     if (error instanceof ApiError) throw error;
     throw new ApiError(
       controller.signal.aborted
-        ? "A ligação demorou demasiado. Verifica a rede e tenta novamente."
+        ? "A ligação demorou demasiado. O serviço pode estar a iniciar; aguarda e tenta novamente."
         : "Não foi possível ligar ao serviço. Verifica a tua rede.",
     );
   } finally {
