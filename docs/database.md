@@ -60,15 +60,22 @@ PRs nem volume externo. Valores por mão não são multiplicados por dois.
 Ordenação cronológica usa (started_at,id); limites diários/semanais respeitam timezone
 IANA e mudanças de hora. Ver milestone-6.md para as regras completas.
 
-## V2 — progresso
+## M9 — progresso corporal implementado
 
 | Tabela | Campos |
 |---|---|
-| body_measurements | id, user_id FK, measured_at, weight_kg numeric(6,3), waist_cm, chest_cm, arms_cm, legs_cm numeric(6,2), body_fat_percent numeric(5,2), notes; pelo menos uma medida; percentagem 0–100 |
-| progress_photos | id, user_id FK, measurement_id FK nullable, object_key UNIQUE, taken_at, view front/side/back/other, notes |
+| body_measurements | PK (user_id FK, date), weight_kg, waist_cm, chest_cm, arms_cm, legs_cm numeric(7,3), notes varchar(500), created_at, updated_at; pelo menos uma medida |
 
-Índice body_measurements(user_id,measured_at DESC,id) e progress_photos(user_id,taken_at).
-Graphs, frequência, e1RM e volume consultam o histórico V1; sem tabela por gráfico.
+A chave primária permite um registo por dia/conta e suporta consultas por data.
+As datas representam o dia escolhido pelo utilizador no fuso do perfil; guardar no
+mesmo dia atualiza esse registo. A remoção do utilizador propaga-se às suas medidas.
+O backend guarda kg/cm; a interface converte para lb/in quando escolhido no perfil.
+O gráfico consulta os registos sem preencher dias ausentes. Ver milestone-9.md.
+
+Fotografias e percentagem de gordura ficam planeadas para uma fase posterior. Uma
+futura tabela `progress_photos` poderá ligar à medição pela mesma conta/data, com
+object_key único, instante e vista. Analytics de força, frequência, e1RM e volume
+continuam a consultar o histórico V1; não se cria uma tabela por gráfico.
 
 ## V3 — nutrição
 

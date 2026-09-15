@@ -17,6 +17,7 @@ import { useReport } from "../features/history/useReport";
 import { SummaryCard, numberText } from "../features/history/SummaryCard";
 import { clockText } from "../features/workouts/draft";
 import { HomeNutritionCard } from "../features/nutrition/HomeNutritionCard";
+import { HomeProgressCard } from "../features/progress/HomeProgressCard";
 
 export function HomeScreen() {
   const { user, session } = useAuth();
@@ -143,6 +144,7 @@ export function HomeScreen() {
           ))}
         </>
       )}
+      <HomeProgressCard onPress={() => navigation.navigate("Progress")} />
       <Button
         label="Ver histórico"
         variant="secondary"

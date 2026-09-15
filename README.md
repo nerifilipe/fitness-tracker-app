@@ -3,11 +3,12 @@
 App mobile de fitness pessoal e para portefólio. React Native + Expo + TypeScript,
 FastAPI + SQLAlchemy + PostgreSQL. Licença MIT.
 
-**Estado: M8 — nutrição com pesquisa e registo rápido.** Treinos com recuperação local,
-histórico e resultados, mais diário alimentar com pesquisa Open Food Facts, porções,
-recentes, favoritos, repetição de refeições e objetivos diários. A Home mostra calorias
-e proteína reais. O fluxo principal de treino foi validado num Android em M7; os novos
-ecrãs de nutrição têm verificação automatizada, com validação por toque ainda pendente.
+**Estado: M9 — peso e medidas corporais.** Treinos com recuperação local, diário alimentar
+com pesquisa Open Food Facts e registo rápido de peso/medidas. O Progresso mostra gráficos
+de 30/90/365 dias e histórico editável, com kg/cm ou lb/in conforme o perfil. A Home
+mostra nutrição e o último peso registado. O fluxo principal de treino foi validado num
+Android em M7; a validação por toque dos ecrãs M8/M9 fica a cargo do utilizador nesta
+passagem. Estes novos módulos têm verificação automatizada.
 
 - [Arquitetura, navegação, design system e milestones](docs/architecture.md)
 - [Schema completo, relações, índices e cascades](docs/database.md)
@@ -19,6 +20,7 @@ ecrãs de nutrição têm verificação automatizada, com validação por toque 
 - [Conclusão, histórico, resultados e verificações de M6](docs/milestone-6.md)
 - [Validação automatizada, correções e pendências de M7](docs/milestone-7.md)
 - [Nutrição, pesquisa de alimentos e verificações de M8](docs/milestone-8.md)
+- [Peso, medidas, gráficos e verificações de M9](docs/milestone-9.md)
 
 ## Executar localmente (PowerShell)
 
@@ -42,7 +44,7 @@ cd backend
 
 API docs: http://localhost:8000/docs. `/api/v1/health` confirma a API;
 `/api/v1/ready` faz SELECT 1 e devolve 503 quando PostgreSQL não está disponível.
-Alembic cria identidade, biblioteca, planos, treinos e nutrição. O seed acrescenta 24 exercícios e
+Alembic cria identidade, biblioteca, planos, treinos, nutrição e medidas corporais. O seed acrescenta 24 exercícios e
 10 grupos musculares; repetir o comando não duplica nem substitui dados existentes.
 Não existe utilizador de demonstração nem password
 predefinida: cria a tua conta no mobile. `JWT_SECRET` é obrigatório e o script gera-o apenas

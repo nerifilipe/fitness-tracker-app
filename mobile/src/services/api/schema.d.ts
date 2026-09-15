@@ -496,6 +496,59 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/progress/summary": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Summary */
+    get: operations["summary_api_v1_progress_summary_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/progress/measurements": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** History */
+    get: operations["history_api_v1_progress_measurements_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/progress/measurements/{day}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Detail */
+    get: operations["detail_api_v1_progress_measurements__day__get"];
+    /** Save */
+    put: operations["save_api_v1_progress_measurements__day__put"];
+    post?: never;
+    /** Remove */
+    delete: operations["remove_api_v1_progress_measurements__day__delete"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -867,6 +920,76 @@ export interface components {
        */
       target_meal: "breakfast" | "lunch" | "dinner" | "snack";
     };
+    /** MeasurementInput */
+    MeasurementInput: {
+      /** Weight Kg */
+      weight_kg?: number | null;
+      /** Waist Cm */
+      waist_cm?: number | null;
+      /** Chest Cm */
+      chest_cm?: number | null;
+      /** Arms Cm */
+      arms_cm?: number | null;
+      /** Legs Cm */
+      legs_cm?: number | null;
+      /** Notes */
+      notes?: string | null;
+    };
+    /** MeasurementPage */
+    MeasurementPage: {
+      /** Items */
+      items: components["schemas"]["MeasurementResponse"][];
+      /** Next Before */
+      next_before: string | null;
+    };
+    /** MeasurementResponse */
+    MeasurementResponse: {
+      /** Weight Kg */
+      weight_kg?: number | null;
+      /** Waist Cm */
+      waist_cm?: number | null;
+      /** Chest Cm */
+      chest_cm?: number | null;
+      /** Arms Cm */
+      arms_cm?: number | null;
+      /** Legs Cm */
+      legs_cm?: number | null;
+      /** Notes */
+      notes?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+    };
+    /** MetricTrend */
+    MetricTrend: {
+      latest: components["schemas"]["MetricValue"] | null;
+      /** Change */
+      change: number | null;
+      /** Count */
+      count: number;
+    };
+    /** MetricValue */
+    MetricValue: {
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Value */
+      value: number;
+    };
     /** MuscleResponse */
     MuscleResponse: {
       /**
@@ -982,6 +1105,29 @@ export interface components {
       unit_system: "metric" | "imperial";
       /** Weekly Workout Target */
       weekly_workout_target: number;
+    };
+    /** ProgressSummary */
+    ProgressSummary: {
+      /**
+       * Today
+       * Format: date
+       */
+      today: string;
+      /** Timezone */
+      timezone: string;
+      /**
+       * Start Date
+       * Format: date
+       */
+      start_date: string;
+      /** Days */
+      days: number;
+      /** Metrics */
+      metrics: {
+        [key: string]: components["schemas"]["MetricTrend"];
+      };
+      /** Points */
+      points: components["schemas"]["MeasurementResponse"][];
     };
     /** RefreshRequest */
     RefreshRequest: {
@@ -3742,6 +3888,210 @@ export interface operations {
       };
       /** @description Service Unavailable */
       503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  summary_api_v1_progress_summary_get: {
+    parameters: {
+      query?: {
+        days?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ProgressSummary"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  history_api_v1_progress_measurements_get: {
+    parameters: {
+      query?: {
+        before?: string | null;
+        limit?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MeasurementPage"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  detail_api_v1_progress_measurements__day__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        day: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json":
+            components["schemas"]["MeasurementResponse"] | null;
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  save_api_v1_progress_measurements__day__put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        day: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MeasurementInput"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MeasurementResponse"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  remove_api_v1_progress_measurements__day__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        day: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
         headers: {
           [name: string]: unknown;
         };

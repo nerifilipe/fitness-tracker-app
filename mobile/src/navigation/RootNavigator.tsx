@@ -25,6 +25,9 @@ import { FoodPortionScreen } from "../screens/FoodPortionScreen";
 import { NutritionGoalsScreen } from "../screens/NutritionGoalsScreen";
 import { MealCopyScreen } from "../screens/MealCopyScreen";
 import { CustomFoodScreen } from "../screens/CustomFoodScreen";
+import { ProgressScreen } from "../screens/ProgressScreen";
+import { MeasurementEditorScreen } from "../screens/MeasurementEditorScreen";
+import { MeasurementHistoryScreen } from "../screens/MeasurementHistoryScreen";
 import type { Entry, Food, Goals, Meal } from "../features/nutrition/api";
 
 export type RootStackParams = {
@@ -39,11 +42,14 @@ export type RootStackParams = {
   NutritionGoals: { goals: Goals };
   MealCopy: { date: string; meal: Meal };
   CustomFood: { date: string; meal: Meal };
+  MeasurementEditor: { date: string; today: string };
+  MeasurementHistory: { today: string };
 };
 export type TabParams = {
   Home: undefined;
   Workout: undefined;
   Nutrition: undefined;
+  Progress: undefined;
   Profile: undefined;
 };
 const Stack = createNativeStackNavigator<RootStackParams>();
@@ -74,9 +80,11 @@ function MainTabs() {
                 ? "home-outline"
                 : route.name === "Workout"
                   ? "barbell-outline"
-                  : route.name === "Nutrition"
-                    ? "nutrition-outline"
-                    : "person-outline"
+                  : route.name === "Progress"
+                    ? "trending-up-outline"
+                    : route.name === "Nutrition"
+                      ? "nutrition-outline"
+                      : "person-outline"
             }
             color={color}
             size={size}
@@ -93,6 +101,11 @@ function MainTabs() {
         name="Workout"
         component={WorkoutNavigator}
         options={{ title: "Workout" }}
+      />
+      <Tabs.Screen
+        name="Progress"
+        component={ProgressScreen}
+        options={{ title: "Progresso" }}
       />
       <Tabs.Screen
         name="Nutrition"
@@ -134,6 +147,16 @@ export function RootNavigator() {
         {phase === "signedIn" ? (
           <>
             <Stack.Screen name="Main" component={MainTabs} />
+            <Stack.Screen
+              name="MeasurementEditor"
+              component={MeasurementEditorScreen}
+              options={{ headerShown: true, title: "Peso e medidas" }}
+            />
+            <Stack.Screen
+              name="MeasurementHistory"
+              component={MeasurementHistoryScreen}
+              options={{ headerShown: true, title: "Histórico corporal" }}
+            />
             <Stack.Screen
               name="FoodSearch"
               component={FoodSearchScreen}

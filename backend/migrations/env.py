@@ -11,6 +11,7 @@ from app.modules.exercises.models import (  # noqa: F401
     UserExercise,
 )
 from app.modules.nutrition.models import Food, MealEntry, NutritionCopy, NutritionGoal  # noqa: F401
+from app.modules.progress.models import BodyMeasurement  # noqa: F401
 from app.modules.templates.models import (  # noqa: F401
     TemplateExercise,
     TemplateSet,

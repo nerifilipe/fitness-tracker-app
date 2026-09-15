@@ -12,6 +12,7 @@ from app.modules.exercises.router import router as exercises_router
 from app.modules.health.router import router as health_router
 from app.modules.nutrition.provider import FoodProvider
 from app.modules.nutrition.router import router as nutrition_router
+from app.modules.progress.router import router as progress_router
 from app.modules.templates.router import router as templates_router
 from app.modules.users.router import router as users_router
 from app.modules.workouts.router import router as workouts_router
@@ -47,6 +48,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(templates_router, prefix="/api/v1")
     app.include_router(workouts_router, prefix="/api/v1")
     app.include_router(nutrition_router, prefix="/api/v1")
+    app.include_router(progress_router, prefix="/api/v1")
 
     @app.middleware("http")
     async def private_responses(request, call_next):
@@ -59,6 +61,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 "/api/v1/workout-templates",
                 "/api/v1/workouts",
                 "/api/v1/nutrition",
+                "/api/v1/progress",
             )
         ):
             response.headers["Cache-Control"] = "no-store"
