@@ -6,7 +6,7 @@ Built with React Native, Expo, TypeScript, FastAPI and PostgreSQL.
 
 **Android release available · API deployed · MIT licensed**
 
-[Download Android APK](https://expo.dev/artifacts/eas/mPO6dddmeKd-IrB6CpaMe0ebkzlz3hpnfxSqXFXz7OM.apk)
+[Download Android APK](https://github.com/nerifilipe/fitness-tracker-app/releases/download/v1.0.0/fitness-tracker-0.1.0-2.apk)
 · [Screenshots](#screenshots)
 · [Local setup](#local-development)
 · [Documentation](#documentation)
@@ -69,6 +69,9 @@ account state. Typography reflects the device's system font settings.
 2. Open the file from Downloads and install it on your Android phone.
 3. Create an account, then create a workout plan or add your first food entry.
 
+The GitHub release is tagged `v1.0.0`; the attached APK's internal app version is
+`0.1.0` (versionCode `2`).
+
 The APK includes the JavaScript bundle and works without Expo Go, Metro or a PC.
 Authentication, loading server data and synchronization require Internet access;
 a workout started online can continue recording sets offline.
@@ -80,7 +83,8 @@ The API runs on Render Free with PostgreSQL on Neon Free. After inactivity, the
 first request may take longer while the service wakes up; the APK allows up to
 90 seconds per request. Free service quotas apply.
 
-[Expo build](https://expo.dev/accounts/nerifilipe/projects/fitness-tracker/builds/07348244-3818-4517-89be-3985a2fa6a7b)
+[GitHub release](https://github.com/nerifilipe/fitness-tracker-app/releases/tag/v1.0.0)
+· [Expo build](https://expo.dev/accounts/nerifilipe/projects/fitness-tracker/builds/07348244-3818-4517-89be-3985a2fa6a7b)
 · [API health](https://fitness-tracker-api-ku46.onrender.com/api/v1/health)
 · [Deployment and updates](docs/milestone-12.md)
 

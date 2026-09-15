@@ -15,12 +15,16 @@ oficiais de autenticação no navegador, usando os CLIs.
   `f3810486-5c04-4145-a7ad-227849c49f21`, conta `nerifilipe`.
 - [Build Android](https://expo.dev/accounts/nerifilipe/projects/fitness-tracker/builds/07348244-3818-4517-89be-3985a2fa6a7b):
   concluído, perfil `preview`, versão 0.1.0, versionCode 2, assinatura gerida pelo Expo.
-- [Descarregar APK](https://expo.dev/artifacts/eas/mPO6dddmeKd-IrB6CpaMe0ebkzlz3hpnfxSqXFXz7OM.apk):
+- [Release GitHub](https://github.com/nerifilipe/fitness-tracker-app/releases/tag/v1.0.0):
+  publicada com a tag `v1.0.0`; a versão interna do APK continua a ser `0.1.0`, versionCode 2.
+- [Descarregar APK](https://github.com/nerifilipe/fitness-tracker-app/releases/download/v1.0.0/fitness-tracker-0.1.0-2.apk):
   abrir no Android e instalar; não precisa de Expo Go nem do PC.
 
 Foi guardada uma cópia local em `.cache/deploy-tools/fitness-tracker-0.1.0-2.apk`
 (fora do Git), com 85 344 535 bytes. SHA-256:
 `14c2dc916089de3215db3e30efcc7d781426cd546f16ad8a4d1a57c1f88b9077`.
+Em 16/09/2026, o anexo da release GitHub foi confirmado com o mesmo tamanho e
+SHA-256. O link público respondeu com HTTP 200 e o tipo de ficheiro APK.
 A inspeção do APK confirmou manifesto, executável Android, bibliotecas ARM64 e
 JavaScript incluído com o endereço real da API. Esta verificação não substitui
 o teste no dispositivo.
