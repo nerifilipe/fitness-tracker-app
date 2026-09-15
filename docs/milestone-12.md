@@ -2,10 +2,31 @@
 
 ## Estado real da entrega
 
-A preparação no repositório e a verificação local estão feitas. **A API ainda não
-está online e não há APK instalável gerado.** É necessário criar/ligar as contas
-Neon, Render e Expo, publicar o código e obter o URL definitivo antes do build.
-`expo whoami` indicou que não existe sessão Expo iniciada neste PC.
+**API publicada e APK compilado e verificado em 15/09/2026.** Instalação
+e validação nativa continuam pendentes. As três contas foram ligadas pelos fluxos
+oficiais de autenticação no navegador, usando os CLIs.
+
+- API: `https://fitness-tracker-api-ku46.onrender.com/api/v1`
+- [Serviço Render](https://dashboard.render.com/web/srv-dakrvv2fngtc73e1vbbg):
+  plano `free`, Frankfurt, deploy `dep-dakrvvifngtc73e1ve40`, commit `317672a`.
+- Neon: projeto `hidden-mountain-77878161` (`fitness-tracker`), PostgreSQL 17,
+  Frankfurt, organização Free. Endpoint de 0,25 CU; suspensão usa o padrão do plano.
+- [Projeto Expo](https://expo.dev/accounts/nerifilipe/projects/fitness-tracker):
+  `f3810486-5c04-4145-a7ad-227849c49f21`, conta `nerifilipe`.
+- [Build Android](https://expo.dev/accounts/nerifilipe/projects/fitness-tracker/builds/07348244-3818-4517-89be-3985a2fa6a7b):
+  concluído, perfil `preview`, versão 0.1.0, versionCode 2, assinatura gerida pelo Expo.
+- [Descarregar APK](https://expo.dev/artifacts/eas/mPO6dddmeKd-IrB6CpaMe0ebkzlz3hpnfxSqXFXz7OM.apk):
+  abrir no Android e instalar; não precisa de Expo Go nem do PC.
+
+Foi guardada uma cópia local em `.cache/deploy-tools/fitness-tracker-0.1.0-2.apk`
+(fora do Git), com 85 344 535 bytes. SHA-256:
+`14c2dc916089de3215db3e30efcc7d781426cd546f16ad8a4d1a57c1f88b9077`.
+A inspeção do APK confirmou manifesto, executável Android, bibliotecas ARM64 e
+JavaScript incluído com o endereço real da API. Esta verificação não substitui
+o teste no dispositivo.
+
+Os serviços já existem: usar os links acima para gerir esta instalação. As secções
+de criação abaixo servem de referência para reproduzir a configuração noutro ambiente.
 
 O utilizador escolheu custo zero. A configuração não cria serviços pagos nem uma
 base Render. A utilização fica sujeita às quotas dos planos gratuitos; não ativar
@@ -124,8 +145,8 @@ desligado: registo/login, iniciar e concluir um treino, nutrição, medidas, gr�
 e sugestões. Para testar offline, iniciar um treino com ligação, ativar modo avião,
 registar séries, reabrir a app e finalmente voltar a ligar para sincronizar.
 
-Esta validação nativa continua pendente. A exportação JavaScript Android não equivale
-a compilar, instalar ou testar um APK no dispositivo.
+Esta validação nativa continua pendente. O APK foi compilado pelo EAS e inspecionado
+localmente; ainda não foi instalado nem testado no dispositivo nesta entrega.
 
 ## Implementação e verificações locais
 
@@ -149,7 +170,14 @@ TypeScript e Ruff. A exportação Android pelo Expo também terminou com sucesso
 A imagem Docker foi construída e arrancou uma base PostgreSQL vazia. Confirmados
 health/readiness, bloqueio sem autenticação, registo e 24 exercícios únicos. Depois
 de recriar apenas a API, a conta continuou a autenticar e o catálogo manteve 24
-exercícios sem duplicação. Nenhum serviço externo foi criado nem nenhum APK enviado.
+exercícios sem duplicação.
+
+Na publicação real, passaram `/health` e `/ready` (200) e `/workouts/active` sem
+credenciais (401). Uma consulta só de leitura confirmou a migração `0006_progress`
+e 24 exercícios no Neon. A API foi criada pelo CLI/API Render com os campos do
+Blueprint validado; não foi criada uma ligação automática ao Blueprint. Alterações
+em `render.yaml` não modificam automaticamente este serviço. Os outros projetos
+existentes nas contas foram preservados.
 
 Reproduzir o teste local, a partir da raiz:
 
@@ -159,7 +187,7 @@ backend/.venv/Scripts/python backend/scripts/check_deployment.py --api-url http:
 docker compose -f compose.release-test.yaml -p fitness-release-test stop
 ```
 
-Commit sugerido: `feat(deploy): prepare free hosting and Android APK builds`
+Commit sugerido: `chore(deploy): link Expo project and document live Android release`
 
 Referências: [Render Free](https://render.com/docs/free),
 [Render Blueprint](https://render.com/docs/blueprint-spec),

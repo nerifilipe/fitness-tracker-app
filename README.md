@@ -3,9 +3,11 @@
 App mobile de fitness pessoal e para portefólio. React Native + Expo + TypeScript,
 FastAPI + SQLAlchemy + PostgreSQL. Licença MIT.
 
-**Estado: M12 preparado — publicação e APK pendentes das contas externas.**
-Configuração para Render Free + Neon Free e APK via Expo EAS, com imagem Docker
-validada localmente. A API ainda não foi publicada e ainda não foi gerado um APK.
+**Estado: M12 — API publicada e APK Android disponível.**
+API no Render Free com PostgreSQL Neon Free, verificada no ambiente online.
+[Descarregar o APK 0.1.0 (2)](https://expo.dev/artifacts/eas/mPO6dddmeKd-IrB6CpaMe0ebkzlz3hpnfxSqXFXz7OM.apk)
+no Android e instalar: funciona sem Expo Go e sem o PC. A base online é nova;
+criar conta na app. A instalação e a validação no telemóvel continuam pendentes.
 
 Cada exercício pode
 recuperar a última sessão e sugerir manter, acrescentar uma repetição ou subir a

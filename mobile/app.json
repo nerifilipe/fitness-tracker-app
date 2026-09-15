@@ -23,6 +23,12 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-secure-store", "expo-sqlite"]
+    "plugins": ["expo-secure-store", "expo-sqlite"],
+    "extra": {
+      "eas": {
+        "projectId": "f3810486-5c04-4145-a7ad-227849c49f21"
+      }
+    },
+    "owner": "nerifilipe"
   }
 }
