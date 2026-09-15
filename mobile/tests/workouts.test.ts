@@ -21,6 +21,11 @@ import type {
   Sync,
 } from "../src/features/workouts/api";
 import { ApiError } from "../src/services/api/http";
+import {
+  applyProgression,
+  progressionChanges,
+  type Progression,
+} from "../src/features/workouts/progression";
 
 const workout = (): Workout => ({
   id: "workout-a",
@@ -133,6 +138,40 @@ afterEach(() => {
 });
 
 describe("durable workout synchronization", () => {
+  it("persists suggested values offline, restores them and syncs without completing sets", async () => {
+    const { controller, store, remote } = await setup();
+    const e = controller.getSnapshot().local!.workout!.exercises[0];
+    const suggestion = {
+      targets: [{ weight: "21.125", reps: "9" }],
+    } as Progression;
+    const changes = progressionChanges(e, suggestion);
+    expect(
+      controller.edit((w) => ({
+        ...w,
+        exercises: w.exercises.map((item) => applyProgression(item, changes)),
+      })),
+    ).toBe(true);
+    vi.mocked(remote.sync).mockRejectedValueOnce(new ApiError("Offline"));
+    await controller.sync();
+    controller.dispose();
+    const resumed = await setup(store, remote);
+    const set =
+      resumed.controller.getSnapshot().local!.workout!.exercises[0].sets[0];
+    expect(set).toMatchObject({
+      weight: "21.125",
+      reps: "9",
+      rir: "",
+      completed_at: null,
+    });
+    expect(
+      vi.mocked(remote.sync).mock.calls[1][1].exercises[0].sets[0],
+    ).toMatchObject({
+      weight_kg: "21.125",
+      reps: 9,
+      rir: null,
+      completed_at: null,
+    });
+  });
   it("persists offline completion and replays it unchanged after restart", async () => {
     const { controller, store, remote } = await setup();
     const start = Date.parse(workout().started_at);

@@ -7,9 +7,12 @@ import { Text } from "../../components/ui/Text";
 import { conventionLabels } from "../exercises/labels";
 import { freshSet, type LiveExercise, type LiveSet } from "./draft";
 import { theme } from "../../theme";
+import { ExerciseSuggestion } from "./ExerciseSuggestion";
 
 type Props = {
   exercise: LiveExercise;
+  workoutId: string;
+  startedAt: string;
   index: number;
   expanded: boolean;
   disabled: boolean;
@@ -23,6 +26,8 @@ type Props = {
 };
 export function LiveExerciseCard({
   exercise: e,
+  workoutId,
+  startedAt,
   index,
   expanded,
   disabled,
@@ -53,6 +58,14 @@ export function LiveExerciseCard({
         label={expanded ? "Recolher séries" : "Abrir séries"}
         variant="secondary"
         onPress={onToggle}
+      />
+      <ExerciseSuggestion
+        key={`${workoutId}:${e.exercise_id}:${e.load_type_snapshot}:${e.load_convention_snapshot}`}
+        exercise={e}
+        workoutId={workoutId}
+        startedAt={startedAt}
+        visible={expanded && !disabled}
+        disabled={disabled || paused}
       />
       {expanded && (
         <>

@@ -3,11 +3,12 @@
 App mobile de fitness pessoal e para portefólio. React Native + Expo + TypeScript,
 FastAPI + SQLAlchemy + PostgreSQL. Licença MIT.
 
-**Estado: M10 — evolução da força por exercício.** Treinos com recuperação local,
-nutrição com pesquisa de alimentos, peso/medidas e evolução da força. O Progresso
-mostra gráficos, recordes e comparação entre sessões, respeitando a convenção de
-carga e as unidades do perfil. O fluxo principal de treino foi validado num Android
-em M7; os ecrãs M8–M10 têm verificação automatizada, com validação por toque pendente.
+**Estado: M11 — sugestões de progressão durante o treino.** Cada exercício pode
+recuperar a última sessão e sugerir manter, acrescentar uma repetição ou subir a
+carga, com preenchimento das séries por realizar e opção de desfazer. Inclui treinos
+com recuperação local, nutrição, peso/medidas e evolução da força. O fluxo principal
+de treino foi validado num Android em M7; os ecrãs M8–M11 têm verificação automatizada,
+com validação por toque pendente.
 
 - [Arquitetura, navegação, design system e milestones](docs/architecture.md)
 - [Schema completo, relações, índices e cascades](docs/database.md)
@@ -21,6 +22,7 @@ em M7; os ecrãs M8–M10 têm verificação automatizada, com validação por t
 - [Nutrição, pesquisa de alimentos e verificações de M8](docs/milestone-8.md)
 - [Peso, medidas, gráficos e verificações de M9](docs/milestone-9.md)
 - [Evolução da força, recordes e comparação de sessões em M10](docs/milestone-10.md)
+- [Sugestões de progressão e preenchimento das séries em M11](docs/milestone-11.md)
 
 ## Executar localmente (PowerShell)
 

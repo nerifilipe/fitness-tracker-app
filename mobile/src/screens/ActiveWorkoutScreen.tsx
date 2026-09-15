@@ -223,8 +223,9 @@ export function ActiveWorkoutScreen() {
                 </Card>
               )}
               <Text muted>
-                Os valores iniciais vêm do plano. Confirma a carga e as
-                repetições realizadas antes de concluir cada série.
+                Usa os valores do plano ou aplica a sugestão de cada exercício.
+                Confirma a carga e as repetições realizadas antes de concluir
+                cada série.
               </Text>
             </>
           )}
@@ -232,6 +233,8 @@ export function ActiveWorkoutScreen() {
             <LiveExerciseCard
               key={e.id}
               exercise={e}
+              workoutId={workout.id}
+              startedAt={workout.started_at}
               index={index}
               expanded={expanded === e.id || (expanded === null && index === 0)}
               disabled={disabled}

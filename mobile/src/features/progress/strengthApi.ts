@@ -11,6 +11,11 @@ export type StrengthSessionPage = components["schemas"]["StrengthSessionPage"];
 
 export function strengthApi(session: AuthSession) {
   return {
+    recent: (id: string, group: StrengthGroup, signal?: AbortSignal) =>
+      session.authorized<StrengthSessionPage>(
+        `/progress/strength/${id}/sessions?${new URLSearchParams({ ...group, limit: "2" })}`,
+        { signal },
+      ),
     exercises: (q: string, cursor: string | null, signal?: AbortSignal) =>
       session.authorized<StrengthExercisePage>(
         `/progress/strength/exercises?${new URLSearchParams({ q, limit: "20", ...(cursor ? { cursor } : {}) })}`,
