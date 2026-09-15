@@ -3485,6 +3485,355 @@
           }
         }
       }
+    },
+    "/api/v1/progress/strength/exercises": {
+      "get": {
+        "tags": [
+          "strength"
+        ],
+        "summary": "Exercises",
+        "operationId": "exercises_api_v1_progress_strength_exercises_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 120,
+              "default": "",
+              "title": "Q"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 1024
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StrengthExercisePage"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          }
+        }
+      }
+    },
+    "/api/v1/progress/strength/{exercise_id}": {
+      "get": {
+        "tags": [
+          "strength"
+        ],
+        "summary": "Overview",
+        "operationId": "overview_api_v1_progress_strength__exercise_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "exercise_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Exercise Id"
+            }
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 1,
+              "default": 90,
+              "title": "Days"
+            }
+          },
+          {
+            "name": "load_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "external",
+                    "bodyweight",
+                    "assisted"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Load Type"
+            }
+          },
+          {
+            "name": "load_convention",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "total",
+                    "per_hand",
+                    "none",
+                    "added",
+                    "assistance"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Load Convention"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StrengthOverview"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          }
+        }
+      }
+    },
+    "/api/v1/progress/strength/{exercise_id}/sessions": {
+      "get": {
+        "tags": [
+          "strength"
+        ],
+        "summary": "History",
+        "operationId": "history_api_v1_progress_strength__exercise_id__sessions_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "exercise_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Exercise Id"
+            }
+          },
+          {
+            "name": "load_type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": [
+                "external",
+                "bodyweight",
+                "assisted"
+              ],
+              "type": "string",
+              "title": "Load Type"
+            }
+          },
+          {
+            "name": "load_convention",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": [
+                "total",
+                "per_hand",
+                "none",
+                "added",
+                "assistance"
+              ],
+              "type": "string",
+              "title": "Load Convention"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 512
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StrengthSessionPage"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -5118,6 +5467,399 @@
           "display_name"
         ],
         "title": "RegisterRequest"
+      },
+      "StrengthBest": {
+        "properties": {
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "weight_kg": {
+            "type": "number",
+            "title": "Weight Kg"
+          },
+          "reps": {
+            "type": "integer",
+            "title": "Reps"
+          },
+          "workout_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Workout Id"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "value",
+          "weight_kg",
+          "reps",
+          "workout_id",
+          "started_at"
+        ],
+        "title": "StrengthBest"
+      },
+      "StrengthExercise": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "sessions": {
+            "type": "integer",
+            "title": "Sessions"
+          },
+          "last_trained": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Last Trained"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "sessions",
+          "last_trained"
+        ],
+        "title": "StrengthExercise"
+      },
+      "StrengthExercisePage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/StrengthExercise"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "title": "StrengthExercisePage"
+      },
+      "StrengthGroup": {
+        "properties": {
+          "load_type": {
+            "type": "string",
+            "enum": [
+              "external",
+              "bodyweight",
+              "assisted"
+            ],
+            "title": "Load Type"
+          },
+          "load_convention": {
+            "type": "string",
+            "enum": [
+              "total",
+              "per_hand",
+              "none",
+              "added",
+              "assistance"
+            ],
+            "title": "Load Convention"
+          }
+        },
+        "type": "object",
+        "required": [
+          "load_type",
+          "load_convention"
+        ],
+        "title": "StrengthGroup"
+      },
+      "StrengthOverview": {
+        "properties": {
+          "exercise_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Exercise Id"
+          },
+          "exercise_name": {
+            "type": "string",
+            "title": "Exercise Name"
+          },
+          "timezone": {
+            "type": "string",
+            "title": "Timezone"
+          },
+          "groups": {
+            "items": {
+              "$ref": "#/components/schemas/StrengthGroup"
+            },
+            "type": "array",
+            "title": "Groups"
+          },
+          "selected": {
+            "$ref": "#/components/schemas/StrengthGroup"
+          },
+          "days": {
+            "type": "integer",
+            "title": "Days"
+          },
+          "chart_metric": {
+            "type": "string",
+            "title": "Chart Metric"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/StrengthPoint"
+            },
+            "type": "array",
+            "title": "Points"
+          },
+          "records": {
+            "$ref": "#/components/schemas/StrengthRecords"
+          },
+          "latest": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StrengthSession"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "previous": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StrengthSession"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "exercise_id",
+          "exercise_name",
+          "timezone",
+          "groups",
+          "selected",
+          "days",
+          "chart_metric",
+          "points",
+          "records",
+          "latest",
+          "previous"
+        ],
+        "title": "StrengthOverview"
+      },
+      "StrengthPoint": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "value"
+        ],
+        "title": "StrengthPoint"
+      },
+      "StrengthRecords": {
+        "properties": {
+          "heaviest": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StrengthBest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "estimated_1rm": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StrengthBest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reps_at_latest_weight": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StrengthBest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "heaviest",
+          "estimated_1rm",
+          "reps_at_latest_weight"
+        ],
+        "title": "StrengthRecords"
+      },
+      "StrengthSession": {
+        "properties": {
+          "workout_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Workout Id"
+          },
+          "workout_name": {
+            "type": "string",
+            "title": "Workout Name"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          },
+          "completed_sets": {
+            "type": "integer",
+            "title": "Completed Sets"
+          },
+          "total_reps": {
+            "type": "integer",
+            "title": "Total Reps"
+          },
+          "max_weight_kg": {
+            "type": "number",
+            "title": "Max Weight Kg"
+          },
+          "volume_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume Kg"
+          },
+          "estimated_1rm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimated 1Rm"
+          },
+          "sets": {
+            "items": {
+              "$ref": "#/components/schemas/StrengthSet"
+            },
+            "type": "array",
+            "title": "Sets"
+          }
+        },
+        "type": "object",
+        "required": [
+          "workout_id",
+          "workout_name",
+          "started_at",
+          "completed_sets",
+          "total_reps",
+          "max_weight_kg",
+          "volume_kg",
+          "estimated_1rm",
+          "sets"
+        ],
+        "title": "StrengthSession"
+      },
+      "StrengthSessionPage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/StrengthSession"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "title": "StrengthSessionPage"
+      },
+      "StrengthSet": {
+        "properties": {
+          "weight_kg": {
+            "type": "number",
+            "title": "Weight Kg"
+          },
+          "reps": {
+            "type": "integer",
+            "title": "Reps"
+          },
+          "rir": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rir"
+          }
+        },
+        "type": "object",
+        "required": [
+          "weight_kg",
+          "reps",
+          "rir"
+        ],
+        "title": "StrengthSet"
       },
       "TemplateExerciseInput": {
         "properties": {

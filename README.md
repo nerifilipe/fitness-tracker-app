@@ -3,12 +3,11 @@
 App mobile de fitness pessoal e para portefólio. React Native + Expo + TypeScript,
 FastAPI + SQLAlchemy + PostgreSQL. Licença MIT.
 
-**Estado: M9 — peso e medidas corporais.** Treinos com recuperação local, diário alimentar
-com pesquisa Open Food Facts e registo rápido de peso/medidas. O Progresso mostra gráficos
-de 30/90/365 dias e histórico editável, com kg/cm ou lb/in conforme o perfil. A Home
-mostra nutrição e o último peso registado. O fluxo principal de treino foi validado num
-Android em M7; a validação por toque dos ecrãs M8/M9 fica a cargo do utilizador nesta
-passagem. Estes novos módulos têm verificação automatizada.
+**Estado: M10 — evolução da força por exercício.** Treinos com recuperação local,
+nutrição com pesquisa de alimentos, peso/medidas e evolução da força. O Progresso
+mostra gráficos, recordes e comparação entre sessões, respeitando a convenção de
+carga e as unidades do perfil. O fluxo principal de treino foi validado num Android
+em M7; os ecrãs M8–M10 têm verificação automatizada, com validação por toque pendente.
 
 - [Arquitetura, navegação, design system e milestones](docs/architecture.md)
 - [Schema completo, relações, índices e cascades](docs/database.md)
@@ -21,6 +20,7 @@ passagem. Estes novos módulos têm verificação automatizada.
 - [Validação automatizada, correções e pendências de M7](docs/milestone-7.md)
 - [Nutrição, pesquisa de alimentos e verificações de M8](docs/milestone-8.md)
 - [Peso, medidas, gráficos e verificações de M9](docs/milestone-9.md)
+- [Evolução da força, recordes e comparação de sessões em M10](docs/milestone-10.md)
 
 ## Executar localmente (PowerShell)
 

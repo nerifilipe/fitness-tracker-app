@@ -549,6 +549,57 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/progress/strength/exercises": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Exercises */
+    get: operations["exercises_api_v1_progress_strength_exercises_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/progress/strength/{exercise_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Overview */
+    get: operations["overview_api_v1_progress_strength__exercise_id__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/progress/strength/{exercise_id}/sessions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** History */
+    get: operations["history_api_v1_progress_strength__exercise_id__sessions_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1145,6 +1196,145 @@ export interface components {
       password: string;
       /** Display Name */
       display_name: string;
+    };
+    /** StrengthBest */
+    StrengthBest: {
+      /** Value */
+      value: number;
+      /** Weight Kg */
+      weight_kg: number;
+      /** Reps */
+      reps: number;
+      /**
+       * Workout Id
+       * Format: uuid
+       */
+      workout_id: string;
+      /**
+       * Started At
+       * Format: date-time
+       */
+      started_at: string;
+    };
+    /** StrengthExercise */
+    StrengthExercise: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Name */
+      name: string;
+      /** Sessions */
+      sessions: number;
+      /**
+       * Last Trained
+       * Format: date-time
+       */
+      last_trained: string;
+    };
+    /** StrengthExercisePage */
+    StrengthExercisePage: {
+      /** Items */
+      items: components["schemas"]["StrengthExercise"][];
+      /** Next Cursor */
+      next_cursor: string | null;
+    };
+    /** StrengthGroup */
+    StrengthGroup: {
+      /**
+       * Load Type
+       * @enum {string}
+       */
+      load_type: "external" | "bodyweight" | "assisted";
+      /**
+       * Load Convention
+       * @enum {string}
+       */
+      load_convention: "total" | "per_hand" | "none" | "added" | "assistance";
+    };
+    /** StrengthOverview */
+    StrengthOverview: {
+      /**
+       * Exercise Id
+       * Format: uuid
+       */
+      exercise_id: string;
+      /** Exercise Name */
+      exercise_name: string;
+      /** Timezone */
+      timezone: string;
+      /** Groups */
+      groups: components["schemas"]["StrengthGroup"][];
+      selected: components["schemas"]["StrengthGroup"];
+      /** Days */
+      days: number;
+      /** Chart Metric */
+      chart_metric: string;
+      /** Points */
+      points: components["schemas"]["StrengthPoint"][];
+      records: components["schemas"]["StrengthRecords"];
+      latest: components["schemas"]["StrengthSession"] | null;
+      previous: components["schemas"]["StrengthSession"] | null;
+    };
+    /** StrengthPoint */
+    StrengthPoint: {
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Value */
+      value: number;
+    };
+    /** StrengthRecords */
+    StrengthRecords: {
+      heaviest: components["schemas"]["StrengthBest"] | null;
+      estimated_1rm: components["schemas"]["StrengthBest"] | null;
+      reps_at_latest_weight: components["schemas"]["StrengthBest"] | null;
+    };
+    /** StrengthSession */
+    StrengthSession: {
+      /**
+       * Workout Id
+       * Format: uuid
+       */
+      workout_id: string;
+      /** Workout Name */
+      workout_name: string;
+      /**
+       * Started At
+       * Format: date-time
+       */
+      started_at: string;
+      /** Completed Sets */
+      completed_sets: number;
+      /** Total Reps */
+      total_reps: number;
+      /** Max Weight Kg */
+      max_weight_kg: number;
+      /** Volume Kg */
+      volume_kg: number | null;
+      /** Estimated 1Rm */
+      estimated_1rm: number | null;
+      /** Sets */
+      sets: components["schemas"]["StrengthSet"][];
+    };
+    /** StrengthSessionPage */
+    StrengthSessionPage: {
+      /** Items */
+      items: components["schemas"]["StrengthSession"][];
+      /** Next Cursor */
+      next_cursor: string | null;
+    };
+    /** StrengthSet */
+    StrengthSet: {
+      /** Weight Kg */
+      weight_kg: number;
+      /** Reps */
+      reps: number;
+      /** Rir */
+      rir: number | null;
     };
     /** TemplateExerciseInput */
     TemplateExerciseInput: {
@@ -4083,6 +4273,165 @@ export interface operations {
       };
       /** @description Unauthorized */
       401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  exercises_api_v1_progress_strength_exercises_get: {
+    parameters: {
+      query?: {
+        q?: string;
+        cursor?: string | null;
+        limit?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["StrengthExercisePage"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  overview_api_v1_progress_strength__exercise_id__get: {
+    parameters: {
+      query?: {
+        days?: number;
+        load_type?: ("external" | "bodyweight" | "assisted") | null;
+        load_convention?:
+          ("total" | "per_hand" | "none" | "added" | "assistance") | null;
+      };
+      header?: never;
+      path: {
+        exercise_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["StrengthOverview"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unprocessable Content */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  history_api_v1_progress_strength__exercise_id__sessions_get: {
+    parameters: {
+      query: {
+        load_type: "external" | "bodyweight" | "assisted";
+        load_convention: "total" | "per_hand" | "none" | "added" | "assistance";
+        cursor?: string | null;
+        limit?: number;
+      };
+      header?: never;
+      path: {
+        exercise_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["StrengthSessionPage"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not Found */
+      404: {
         headers: {
           [name: string]: unknown;
         };

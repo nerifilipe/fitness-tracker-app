@@ -13,6 +13,7 @@ from app.modules.health.router import router as health_router
 from app.modules.nutrition.provider import FoodProvider
 from app.modules.nutrition.router import router as nutrition_router
 from app.modules.progress.router import router as progress_router
+from app.modules.progress.strength_router import router as strength_router
 from app.modules.templates.router import router as templates_router
 from app.modules.users.router import router as users_router
 from app.modules.workouts.router import router as workouts_router
@@ -49,6 +50,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(workouts_router, prefix="/api/v1")
     app.include_router(nutrition_router, prefix="/api/v1")
     app.include_router(progress_router, prefix="/api/v1")
+    app.include_router(strength_router, prefix="/api/v1")
 
     @app.middleware("http")
     async def private_responses(request, call_next):

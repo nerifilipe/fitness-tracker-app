@@ -1,6 +1,8 @@
 import { useCallback, useMemo, useState } from "react";
 import { ActivityIndicator, Alert, StyleSheet } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { RootStackParams } from "../navigation/RootNavigator";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
@@ -21,6 +23,7 @@ export function ExerciseDetailScreen({
   navigation,
 }: NativeStackScreenProps<WorkoutStackParams, "ExerciseDetail">) {
   const { session } = useAuth();
+  const root = useNavigation<NativeStackNavigationProp<RootStackParams>>();
   const api = useMemo(() => exerciseApi(session), [session]);
   const [exercise, setExercise] = useState<Exercise | null>(null);
   const [error, setError] = useState("");
@@ -97,6 +100,13 @@ export function ExerciseDetailScreen({
               Usa esta convenção em todas as sessões para comparar resultados.
             </Text>
           </Card>
+          <Button
+            label="Ver evolução deste exercício"
+            variant="secondary"
+            onPress={() =>
+              root.navigate("ExerciseStrength", { id: exercise.id })
+            }
+          />
           {!!exercise.secondary_muscles.length && (
             <Card>
               <Text variant="section">Músculos secundários</Text>

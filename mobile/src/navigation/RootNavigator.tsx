@@ -28,6 +28,10 @@ import { CustomFoodScreen } from "../screens/CustomFoodScreen";
 import { ProgressScreen } from "../screens/ProgressScreen";
 import { MeasurementEditorScreen } from "../screens/MeasurementEditorScreen";
 import { MeasurementHistoryScreen } from "../screens/MeasurementHistoryScreen";
+import { StrengthLibraryScreen } from "../screens/StrengthLibraryScreen";
+import { ExerciseStrengthScreen } from "../screens/ExerciseStrengthScreen";
+import { StrengthHistoryScreen } from "../screens/StrengthHistoryScreen";
+import type { StrengthGroup } from "../features/progress/strengthApi";
 import type { Entry, Food, Goals, Meal } from "../features/nutrition/api";
 
 export type RootStackParams = {
@@ -44,6 +48,9 @@ export type RootStackParams = {
   CustomFood: { date: string; meal: Meal };
   MeasurementEditor: { date: string; today: string };
   MeasurementHistory: { today: string };
+  StrengthLibrary: undefined;
+  ExerciseStrength: { id: string };
+  StrengthHistory: { id: string; name: string; group: StrengthGroup };
 };
 export type TabParams = {
   Home: undefined;
@@ -147,6 +154,21 @@ export function RootNavigator() {
         {phase === "signedIn" ? (
           <>
             <Stack.Screen name="Main" component={MainTabs} />
+            <Stack.Screen
+              name="StrengthLibrary"
+              component={StrengthLibraryScreen}
+              options={{ headerShown: true, title: "Evolução da força" }}
+            />
+            <Stack.Screen
+              name="ExerciseStrength"
+              component={ExerciseStrengthScreen}
+              options={{ headerShown: true, title: "Evolução do exercício" }}
+            />
+            <Stack.Screen
+              name="StrengthHistory"
+              component={StrengthHistoryScreen}
+              options={{ headerShown: true, title: "Sessões do exercício" }}
+            />
             <Stack.Screen
               name="MeasurementEditor"
               component={MeasurementEditorScreen}

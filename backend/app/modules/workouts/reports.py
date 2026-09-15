@@ -194,6 +194,20 @@ def estimated_max(weight: Decimal, reps: int) -> Decimal | None:
     return value.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
 
+def estimated_expression():
+    return func.round(
+        case(
+            (WorkoutSet.reps == 1, WorkoutSet.weight_kg),
+            (
+                WorkoutSet.reps.between(2, 10),
+                WorkoutSet.weight_kg * (1 + WorkoutSet.reps / Decimal(30)),
+            ),
+            else_=None,
+        ),
+        2,
+    )
+
+
 def records(db: Session, row: Workout) -> list[PersonalRecord]:
     # Compare only earlier sessions, excluding this workout and later achievements.
     candidates = {}
@@ -215,17 +229,7 @@ def records(db: Session, row: Workout) -> list[PersonalRecord]:
                     candidates[key] = (value, exercise.name_snapshot)
     if not candidates:
         return []
-    estimated = func.round(
-        case(
-            (WorkoutSet.reps == 1, WorkoutSet.weight_kg),
-            (
-                WorkoutSet.reps.between(2, 10),
-                WorkoutSet.weight_kg * (1 + WorkoutSet.reps / Decimal(30)),
-            ),
-            else_=None,
-        ),
-        2,
-    )
+    estimated = estimated_expression()
     previous = db.execute(
         select(
             WorkoutExercise.exercise_id,

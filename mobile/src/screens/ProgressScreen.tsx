@@ -47,6 +47,11 @@ export function ProgressScreen() {
         <Text variant="title">A tua evolução.</Text>
         <Text muted>O peso de hoje. A perspetiva ao longo do tempo.</Text>
       </View>
+      <Button
+        label="Ver evolução da força"
+        variant="secondary"
+        onPress={() => navigation.navigate("StrengthLibrary")}
+      />
       {!!error && (
         <>
           <Text accessibilityRole="alert" style={{ color: theme.colors.error }}>
