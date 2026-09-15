@@ -19,6 +19,13 @@ import { theme } from "../theme";
 import { ActiveWorkoutScreen } from "../screens/ActiveWorkoutScreen";
 import { HistoryScreen } from "../screens/HistoryScreen";
 import { WorkoutSummaryScreen } from "../screens/WorkoutSummaryScreen";
+import { NutritionScreen } from "../screens/NutritionScreen";
+import { FoodSearchScreen } from "../screens/FoodSearchScreen";
+import { FoodPortionScreen } from "../screens/FoodPortionScreen";
+import { NutritionGoalsScreen } from "../screens/NutritionGoalsScreen";
+import { MealCopyScreen } from "../screens/MealCopyScreen";
+import { CustomFoodScreen } from "../screens/CustomFoodScreen";
+import type { Entry, Food, Goals, Meal } from "../features/nutrition/api";
 
 export type RootStackParams = {
   Login: undefined;
@@ -27,10 +34,16 @@ export type RootStackParams = {
   ActiveWorkout: undefined;
   History: undefined;
   WorkoutSummary: { id: string };
+  FoodSearch: { date: string; meal: Meal };
+  FoodPortion: { date: string; meal: Meal; food: Food; entry?: Entry };
+  NutritionGoals: { goals: Goals };
+  MealCopy: { date: string; meal: Meal };
+  CustomFood: { date: string; meal: Meal };
 };
 export type TabParams = {
   Home: undefined;
   Workout: undefined;
+  Nutrition: undefined;
   Profile: undefined;
 };
 const Stack = createNativeStackNavigator<RootStackParams>();
@@ -61,7 +74,9 @@ function MainTabs() {
                 ? "home-outline"
                 : route.name === "Workout"
                   ? "barbell-outline"
-                  : "person-outline"
+                  : route.name === "Nutrition"
+                    ? "nutrition-outline"
+                    : "person-outline"
             }
             color={color}
             size={size}
@@ -78,6 +93,11 @@ function MainTabs() {
         name="Workout"
         component={WorkoutNavigator}
         options={{ title: "Workout" }}
+      />
+      <Tabs.Screen
+        name="Nutrition"
+        component={NutritionScreen}
+        options={{ title: "Nutrição" }}
       />
       <Tabs.Screen
         name="Profile"
@@ -114,6 +134,31 @@ export function RootNavigator() {
         {phase === "signedIn" ? (
           <>
             <Stack.Screen name="Main" component={MainTabs} />
+            <Stack.Screen
+              name="FoodSearch"
+              component={FoodSearchScreen}
+              options={{ headerShown: true, title: "Adicionar alimento" }}
+            />
+            <Stack.Screen
+              name="FoodPortion"
+              component={FoodPortionScreen}
+              options={{ headerShown: true, title: "Porção" }}
+            />
+            <Stack.Screen
+              name="NutritionGoals"
+              component={NutritionGoalsScreen}
+              options={{ headerShown: true, title: "Objetivos diários" }}
+            />
+            <Stack.Screen
+              name="MealCopy"
+              component={MealCopyScreen}
+              options={{ headerShown: true, title: "Repetir refeição" }}
+            />
+            <Stack.Screen
+              name="CustomFood"
+              component={CustomFoodScreen}
+              options={{ headerShown: true, title: "Novo alimento" }}
+            />
             <Stack.Screen
               name="History"
               component={HistoryScreen}

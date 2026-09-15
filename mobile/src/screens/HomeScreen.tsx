@@ -16,6 +16,7 @@ import { reportsApi } from "../features/history/api";
 import { useReport } from "../features/history/useReport";
 import { SummaryCard, numberText } from "../features/history/SummaryCard";
 import { clockText } from "../features/workouts/draft";
+import { HomeNutritionCard } from "../features/nutrition/HomeNutritionCard";
 
 export function HomeScreen() {
   const { user, session } = useAuth();
@@ -43,6 +44,7 @@ export function HomeScreen() {
         <Text muted>Mais consistência. Um treino de cada vez.</Text>
       </View>
       <WorkoutBanner />
+      <HomeNutritionCard onPress={() => navigation.navigate("Nutrition")} />
       {loading && <ActivityIndicator color={theme.colors.accent} />}
       {!!error && (
         <Card>

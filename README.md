@@ -3,11 +3,11 @@
 App mobile de fitness pessoal e para portefólio. React Native + Expo + TypeScript,
 FastAPI + SQLAlchemy + PostgreSQL. Licença MIT.
 
-**Estado: M6 — conclusão, histórico e resultados.** Identidade, biblioteca, planos e
-execução de treino com recuperação local. Finalização idempotente, resumo com volume e
-marcas pessoais, histórico paginado com filtro de datas e Home com resultados semanais
-reais. M7 tem verificação automatizada entre mobile/API/SQLite; validação visual e por
-toque em dispositivos Android/iOS ainda pendente.
+**Estado: M8 — nutrição com pesquisa e registo rápido.** Treinos com recuperação local,
+histórico e resultados, mais diário alimentar com pesquisa Open Food Facts, porções,
+recentes, favoritos, repetição de refeições e objetivos diários. A Home mostra calorias
+e proteína reais. O fluxo principal de treino foi validado num Android em M7; os novos
+ecrãs de nutrição têm verificação automatizada, com validação por toque ainda pendente.
 
 - [Arquitetura, navegação, design system e milestones](docs/architecture.md)
 - [Schema completo, relações, índices e cascades](docs/database.md)
@@ -18,6 +18,7 @@ toque em dispositivos Android/iOS ainda pendente.
 - [Treino ativo, recuperação e verificações de M5](docs/milestone-5.md)
 - [Conclusão, histórico, resultados e verificações de M6](docs/milestone-6.md)
 - [Validação automatizada, correções e pendências de M7](docs/milestone-7.md)
+- [Nutrição, pesquisa de alimentos e verificações de M8](docs/milestone-8.md)
 
 ## Executar localmente (PowerShell)
 
@@ -41,7 +42,7 @@ cd backend
 
 API docs: http://localhost:8000/docs. `/api/v1/health` confirma a API;
 `/api/v1/ready` faz SELECT 1 e devolve 503 quando PostgreSQL não está disponível.
-Alembic cria identidade, biblioteca, planos e treinos. O seed acrescenta 24 exercícios e
+Alembic cria identidade, biblioteca, planos, treinos e nutrição. O seed acrescenta 24 exercícios e
 10 grupos musculares; repetir o comando não duplica nem substitui dados existentes.
 Não existe utilizador de demonstração nem password
 predefinida: cria a tua conta no mobile. `JWT_SECRET` é obrigatório e o script gera-o apenas

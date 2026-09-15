@@ -15,3 +15,4 @@ class Settings(BaseSettings):
     access_token_seconds: int = Field(default=600, ge=60, le=3600)
     refresh_token_days: int = Field(default=30, ge=1, le=90)
     auth_rate_limit: int = Field(default=30, ge=1, le=1000)
+    food_user_agent: str = "FitnessTracker/0.1 (https://github.com/nerifilipe/fitness-tracker-app)"
